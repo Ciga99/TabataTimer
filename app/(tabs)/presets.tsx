@@ -1,43 +1,44 @@
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { Image } from 'expo-image';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 
 import { ThemedView } from '@/components/themed-view';
 
+import { IconSymbol } from '@/components/ui/icon-symbol';
 import React from 'react';
 
 
 export default function HomeScreen() {
   return (
-  <ParallaxScrollView
-    headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-    headerImage={
-      <Image
-        source={require('@/assets/images/partial-react-logo.png')}
-        style={styles.reactLogo}
-      />
-    }>
-    <ThemedView style={styles.titleContainer}>
-    </ThemedView>    
-  </ParallaxScrollView>
+    <ThemedView style={styles.container}>
+      {/* Tuo contenuto */}
+      
+      {/* Pulsante floating */}
+      <TouchableOpacity 
+        style={styles.floatingButton}
+        onPress={() => console.log('Add preset')}>
+        <IconSymbol name="plus" size={24} color="white" />
+      </TouchableOpacity>
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
+  floatingButton: {
     position: 'absolute',
+    bottom: 120, // Sopra la tab bar (70 + 30 + margine)
+    right: 30,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#007AFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
 });
