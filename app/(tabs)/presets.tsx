@@ -9,8 +9,6 @@ import React from 'react';
 export default function HomeScreen() {
   return (
     <ThemedView style={styles.container}>
-      {/* Tuo contenuto */}
-      
       {/* Pulsante floating */}
       <TouchableOpacity 
         style={styles.floatingButton}
