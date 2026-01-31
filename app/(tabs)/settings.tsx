@@ -6,7 +6,7 @@ import { ThemedView } from '@/components/themed-view';
 import { LANGUAGES, SPEAKERS, useSettings } from '@/context/SettingsContext';
 import Slider from '@react-native-community/slider';
 import React, { useState } from 'react';
-import { StyleSheet, Switch, useColorScheme } from 'react-native';
+import { StyleSheet, Switch, TouchableOpacity, useColorScheme } from 'react-native';
   
 export default function TabTwoScreen() { 
   //Importo hooks del context
@@ -29,7 +29,7 @@ export default function TabTwoScreen() {
 
   //Sono come le variabili di stato di un compinente Angualr  
   return (
-  <ThemedView>
+  <ThemedView style={styles.container}>
     <ThemedView> 
       <ThemedText >Impostazioni</ThemedText>
       {/* Sezione Aspetto */}
@@ -48,46 +48,60 @@ export default function TabTwoScreen() {
         <SettingRow label="Voci Abilitate">
           <Switch
           trackColor={{ false: '#767577', true: 'green' }}
-          value={true}
+          value={voiceActive}
+          onValueChange={setVoiceActive}
           />
         </SettingRow>
-        <SettingRow label="Lingua"> 
-          <PickerModal
-            visible={languagePickerVisible}
-            onClose={() => setLanguagePickerVisible(false)}
-            options={LANGUAGES}
-            selectedValue={language}
-            onSelect={setLanguage}
-            title="Seleziona Lingua"
-          />
-          <ThemedText onPress={() => setLanguagePickerVisible(true)}>{language}</ThemedText>
-        </SettingRow>
-          <SettingRow label="Voce"> 
+        { voiceActive && (
+          // blocco di codice condizionale deve avere sempre un solo "padre". <> ... </>. È come un contenitore invisibile che non sporca il layout.
+          <>
+            <SettingRow label="Lingua"> 
+            <TouchableOpacity
+                onPress={() => setLanguagePickerVisible(true)}
+                style={[styles.pickerButton, { borderColor: '#ffffff', borderWidth: 1 }]}>
+            <ThemedText style={styles.pickerButtonText}>{language}</ThemedText>
+            </TouchableOpacity>
               <PickerModal
-                visible={speakerPickerVisible}
-                onClose={() => setSpeakerPickerVisible(false)}
-                options={SPEAKERS}
-                selectedValue={voice}
-                onSelect={setVoice}
-                title="Seleziona Voce"
+                visible={languagePickerVisible}
+                onClose={() => setLanguagePickerVisible(false)}
+                options={LANGUAGES}
+                selectedValue={language}
+                onSelect={setLanguage}
+                title="Seleziona Lingua"
               />
-          <ThemedText onPress={() => setSpeakerPickerVisible(true)}>{voice}</ThemedText>
-        </SettingRow>
-        {/* manca la ricerca voe TODO  */}
-        <SettingRow label="Volume" slider={true}> 
-          <ThemedView  lightColor="transparent" darkColor="transparent">
-            <Slider
-              minimumValue={0}
-              maximumValue={1}
-              minimumTrackTintColor="#007AFF"
-              // maximumTrackTintColor={theme === 'dark' ? '#555' : '#A9A9A9'}
-              thumbTintColor="#007AFF"
-              value={volume}
-              onValueChange={setVolume}
-              step={0.01}
-            />
-          </ThemedView>
-        </SettingRow>
+            </SettingRow>
+              <SettingRow label="Voce"> 
+              <TouchableOpacity
+                onPress={() => setSpeakerPickerVisible(true)}
+                style={[styles.pickerButton, { borderColor: '#ffffff', borderWidth: 1 }]}>
+              <ThemedText style={styles.pickerButtonText}>{voice}</ThemedText>
+              </TouchableOpacity>
+                  <PickerModal
+                    visible={speakerPickerVisible}
+                    onClose={() => setSpeakerPickerVisible(false)}
+                    options={SPEAKERS}
+                    selectedValue={voice}
+                    onSelect={setVoice}
+                    title="Seleziona Voce"
+                  />
+              {/* <ThemedText onPress={() => setSpeakerPickerVisible(true)}>{voice}</ThemedText> */}
+            </SettingRow>
+            <SettingRow label="Volume" slider={true}> 
+              <ThemedView  lightColor="transparent" darkColor="transparent">
+                <Slider
+                  minimumValue={0}
+                  maximumValue={1}
+                  minimumTrackTintColor="#007AFF"
+                  // maximumTrackTintColor={theme === 'dark' ? '#555' : '#A9A9A9'}
+                  thumbTintColor="#007AFF"
+                  value={volume}
+                  onValueChange={setVolume}
+                  step={0.01}
+                />
+              </ThemedView>
+            </SettingRow>
+          </>
+        )}
       </Card>
       <ThemedText >Versione: 0.0.0</ThemedText>
     </ThemedView>    
@@ -133,5 +147,6 @@ const styles = StyleSheet.create({
   pickerButtonText: {
     fontSize: 16,
     textAlign: 'center',
+
   }
 });

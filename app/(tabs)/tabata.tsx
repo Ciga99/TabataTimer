@@ -1,11 +1,17 @@
+import { ThemedView } from '@/components/themed-view';
 import { StyleSheet } from 'react-native';
 
 
 export default function TabTwoScreen() {
-  // return (
-  //   <ThemedView style={{ flex: 1, padding: 20 }}>
-  // );
+  return (
+    <ThemedView style={styles.container}>
+      
+    </ThemedView>
+  );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
 });

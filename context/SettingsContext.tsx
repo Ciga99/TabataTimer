@@ -2,10 +2,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 
 export type Languages = 'ITA' | 'ENG';
-export type Speakers = 'Alice' | 'Bob' | 'Charlie';
+export type Speakers = 'Alice' | 'Bob' | 'Random';
 
 export const LANGUAGES: Languages[] = ['ITA', 'ENG'];
-export const SPEAKERS: Speakers[] = ['Alice', 'Bob', 'Charlie'];
+export const SPEAKERS: Speakers[] = ['Alice', 'Bob', 'Random'];
 
 // 1. Definisci il tipo
 type SettingsContextType = {
