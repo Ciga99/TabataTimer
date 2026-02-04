@@ -72,9 +72,13 @@ export function TrainingModal({
   }, [formData.cycles, formData.serial, formData.timeWork, formData.timePause, formData.timePauseCycle]);
 
   // Questa funzione dice: "Prendi il campo X e aggiornalo con il valore Y, mantenendo tutto il resto uguale".
-  const updateField = <K extends keyof Training>(field: K, value: Training[K]) => {
+  const updateField = <K extends keyof Training>(field: K, value: Training[K]) => {//value: Training[K]: Il valore corrispondente al tipo esatto di quel campo
     setFormData(prev => ({ ...prev, [field]: value }));
   };
+
+//   Usa lo spread operator { ...prev } per copiare lo stato precedente.
+// Sostituisce solo il campo [field] con il nuovo value.
+// setFormData aggiorna lo stato in modo immutabile.
 
   const handleSave = () => {
     onSave(formData);
