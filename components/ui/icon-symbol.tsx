@@ -25,6 +25,7 @@ const MAPPING = {
   'list.bullet': 'format-list-bulleted', // La lasciamo per usi futuri
   'bookmark.fill': 'bookmark',
   pencil: 'edit',
+  'stop': 'stop-circle',
   'trash.fill': 'delete',
 } as IconMapping;
 
