@@ -6,14 +6,12 @@ import { ThemedText } from "./themed-text";
 type TrainingModalProps<T> = {
   visible: boolean;
   onClose: () => void;
-  options: T[];
-  selectedValue: T;
   onSelect: (value: T) => void;
 };
 
 //   const { theme } = useTheme();
 //   const { width } = useWindowDimensions();
-//   const [name, setName] = useState('');
+//   const [title, setName] = useState('');
 //   const [description, setDescription] = useState('');
 //   const [cycles, setCycles] = useState(1);
 //   const [serial, setSerial] = useState(8);
@@ -26,7 +24,7 @@ type TrainingModalProps<T> = {
 
 export function trainingModal<T>(props: TrainingModalProps<T>) {
     const [speakerPickerVisible, setSpeakerPickerVisible] = useState(false);
-    const { visible, onClose, options, selectedValue, onSelect } = props;
+    const { visible, onClose, onSelect } = props;
       //Importo hooks del context
       const { 
         volume, 
@@ -51,8 +49,7 @@ export function trainingModal<T>(props: TrainingModalProps<T>) {
           <ThemedText>Tempo per pausa ciclo : </ThemedText>
           <ThemedText>Tempo totale di allenamento</ThemedText>
           <ThemedText>Voce attiva : {voiceActive ? "Sì" : "No"}</ThemedText>
-          <ThemedText>Voce : </ThemedText>       
-          
+          <ThemedText>Voce : </ThemedText>                 
         </Modal>       
     );
 }
