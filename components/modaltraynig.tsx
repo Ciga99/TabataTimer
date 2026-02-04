@@ -110,7 +110,7 @@ export function TrainingModal({
           style={styles.modalContent}
           lightColor="#fff"
           darkColor="#2c2c2e">
-          <TouchableOpacity activeOpacity={1}>
+          <TouchableOpacity activeOpacity={1} style={{ flex: 1 }}>
             <ScrollView showsVerticalScrollIndicator={false}>
               <ThemedText style={styles.modalTitle}>{title}</ThemedText>
 

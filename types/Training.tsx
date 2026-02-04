@@ -12,3 +12,7 @@ export type Training = {
     voice: Speakers;
     isVoiceEnabled: boolean;
 }
+
+export interface Preset extends Training {
+    id: string;
+}

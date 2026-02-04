@@ -3,7 +3,9 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
+import { PresetsProvider } from '@/context/PresetsContext';
 import { SettingsProvider } from '@/context/SettingsContext';
+import { TrainingProvider } from '@/context/TrainingContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
 
@@ -25,12 +27,16 @@ export default function RootLayout() {
     //                      └── useSettings() ✅ Trova il Provider!
     //Il Provider deve essere un componente GENITORE di tutti i componenti che usano il Context.
     <SettingsProvider>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        </Stack>
-        <StatusBar style="auto" />
-      </ThemeProvider>
+      <TrainingProvider>
+        <PresetsProvider>
+          <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            </Stack>
+            <StatusBar style="auto" />
+          </ThemeProvider>
+        </PresetsProvider>
+      </TrainingProvider>
     </SettingsProvider>
   );
 }

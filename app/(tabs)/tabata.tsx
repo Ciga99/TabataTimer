@@ -1,6 +1,10 @@
 import { SettingButtonTrayning } from '@/components/homeComponents/smallbutton';
+import { TrainingModal } from '@/components/modaltraynig';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { useTraining } from '@/context/TrainingContext';
+import { Training } from '@/types/Training';
+import { useState } from 'react';
 import { Dimensions, StyleSheet, TouchableOpacity } from 'react-native';
 
 const screenWidth = Dimensions.get('window').width;
@@ -8,10 +12,21 @@ const buttonSize = screenWidth - 16; // 8px margin per lato
 const smallButtonSize = (screenWidth / 6) - 16; // 7 bottoni con margin 8px per lato
 
 export default function TabTwoScreen() {
+  const { training, setTraining } = useTraining();//Usa il tuo custom hook
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const openModal = () => setIsModalVisible(true);
+  const closeModal = () => setIsModalVisible(false);
+
+  const handleSaveTraining = (updatedTraining: Training) => {
+    setTraining(updatedTraining);
+    closeModal();
+  };
+
   return (
     <ThemedView style={styles.container}>
        <ThemedText>Tempo rimanente: 23:00</ThemedText>
-      <TouchableOpacity 
+      <TouchableOpacity
         style={styles.bigButton}
         onPress={() => console.log('Premuto!')}
       >
@@ -19,25 +34,33 @@ export default function TabTwoScreen() {
       </TouchableOpacity>
 
       <ThemedView style={styles.containerButton}>
-        <SettingButtonTrayning style={styles.smallButton}  title="workTime">
-          <ThemedText style={styles.smallButtonText} >12:00</ThemedText>
+        <SettingButtonTrayning style={styles.smallButton} title="workTime" onPress={openModal}>
+          <ThemedText style={styles.smallButtonText}>{training.timeWork}s</ThemedText>
         </SettingButtonTrayning>
-        <SettingButtonTrayning style={styles.smallButton}  title="restTIME">
-          <ThemedText style={styles.smallButtonText} >12:00</ThemedText>
+        <SettingButtonTrayning style={styles.smallButton} title="restTime" onPress={openModal}>
+          <ThemedText style={styles.smallButtonText}>{training.timePause}s</ThemedText>
         </SettingButtonTrayning>
-        <SettingButtonTrayning style={styles.smallButton}  title="seriesNumber">
-          <ThemedText style={styles.smallButtonText}>12:00</ThemedText>
+        <SettingButtonTrayning style={styles.smallButton} title="series" onPress={openModal}>
+          <ThemedText style={styles.smallButtonText}>{training.serial}</ThemedText>
         </SettingButtonTrayning>
-        <SettingButtonTrayning style={styles.smallButton}  title="seriesREst">
-          <ThemedText style={styles.smallButtonText}>12:00</ThemedText>
+        <SettingButtonTrayning style={styles.smallButton} title="seriesRest" onPress={openModal}>
+          <ThemedText style={styles.smallButtonText}>{training.timePauseCycle}s</ThemedText>
         </SettingButtonTrayning>
-        <SettingButtonTrayning style={styles.smallButton}  title="circleNumber">
-          <ThemedText  style={styles.smallButtonText}>12:00</ThemedText>
+        <SettingButtonTrayning style={styles.smallButton} title="cycles" onPress={openModal}>
+          <ThemedText style={styles.smallButtonText}>{training.cycles}</ThemedText>
         </SettingButtonTrayning>
-        <SettingButtonTrayning style={styles.smallButton}  title="circleRest">
-          <ThemedText style={styles.smallButtonText}>12:00</ThemedText>
+        <SettingButtonTrayning style={styles.smallButton} title="cycleRest" onPress={openModal}>
+          <ThemedText style={styles.smallButtonText}>{training.timePauseCycle}s</ThemedText>
         </SettingButtonTrayning>
       </ThemedView>
+
+      <TrainingModal
+        visible={isModalVisible}
+        onClose={closeModal}
+        onSave={handleSaveTraining}
+        training={training}
+        title="Modifica Allenamento"
+      />
     </ThemedView>
   );
 }
