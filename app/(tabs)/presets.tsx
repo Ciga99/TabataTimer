@@ -131,7 +131,7 @@ export default function HomeScreen() {
         data={mockPresets}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
-        renderItem={({ item }) => (
+        renderItem={({ item }) => (          
           <Card title={item.title}>
             <View style={styles.cardContent}>
               {/* Informazioni del preset */}
@@ -155,16 +155,26 @@ export default function HomeScreen() {
           </Card>
         )}
       />
-
       {/* Pulsante Floating per aggiungere preset */}
       <TouchableOpacity 
         style={styles.fabButton}
         onPress={handleAddPreset}>
         <IconSymbol name="plus" size={24} color="white" />
       </TouchableOpacity>
+      {/* <TrainingModal 
+        visible={false} 
+        onClose={function (): void {
+          throw new Error('Function not implemented.');
+        } } onSave={function (training: Training): void {
+          throw new Error('Function not implemented.');
+        } }     
+       >
+        </TrainingModal> */}
     </ThemedView>
   );
 }
+
+
 
 const styles = StyleSheet.create({
   container: {
