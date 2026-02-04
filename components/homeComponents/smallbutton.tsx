@@ -1,0 +1,23 @@
+import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { ThemedText } from "../themed-text";
+
+
+export const SettingButtonTrayning: React.FC<{ title: string , children: React.ReactNode, style?: any }> = ({ title, children, style }) => (
+    <TouchableOpacity style={style} onPress={() => console.log('Apri il modal!')}>
+        <View style={localStyles.content}>
+            <ThemedText style={localStyles.title}>{title}</ThemedText>
+            {children}
+        </View>
+    </TouchableOpacity>
+);
+
+const localStyles = StyleSheet.create({
+    content: {
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    title: {
+        fontSize: 8,
+        marginBottom: 2,
+    },
+});

@@ -55,6 +55,54 @@ const mockPresets: Preset[] = [
     timePauseCycle: 30,
     voice: 'Alice',
     isVoiceEnabled: true,
+  },
+  {
+    id: '3',
+    title: 'Workout Addominali 4',
+    description: '16 Settimane',
+    numberCycles: 5,
+    numberSerial: 6,
+    timeWork: 60,
+    timePause: 20,
+    timePauseCycle: 30,
+    voice: 'Alice',
+    isVoiceEnabled: true,
+  },
+  {
+    id: '1',
+    title: 'Workout Addominali 2',
+    description: '8 Settimane',
+    numberCycles: 3,
+    numberSerial: 5,
+    timeWork: 45,
+    timePause: 15,
+    timePauseCycle: 20,
+    voice: 'Alice',
+    isVoiceEnabled: true,
+  },
+  {
+    id: '2',
+    title: 'Workout Addominali 3',
+    description: '12 Settimane',
+    numberCycles: 4,
+    numberSerial: 6,
+    timeWork: 60,
+    timePause: 20,
+    timePauseCycle: 30,
+    voice: 'Alice',
+    isVoiceEnabled: true,
+  },
+  {
+    id: '3',
+    title: 'Workout Addominali 4',
+    description: '16 Settimane',
+    numberCycles: 5,
+    numberSerial: 6,
+    timeWork: 60,
+    timePause: 20,
+    timePauseCycle: 30,
+    voice: 'Alice',
+    isVoiceEnabled: true,
   }
 ];
 
@@ -90,7 +138,7 @@ export default function HomeScreen() {
               <View style={styles.infoContainer}>
                 <ThemedText style={styles.description}>{item.description}</ThemedText>
                 <ThemedText style={styles.details}>
-                  Cicli: {item.numberCycles} - Serie: {item.numberSerial}
+                  Cicli: {item.numberCycles} - Serie: {item.numberSerial} -tempo serie: {item.timeWork}s - Voce: {item.voice} - abilitata: {item.isVoiceEnabled ? 'Sì' : 'No'}
                 </ThemedText>
                 <ThemedText style={styles.details}>
                   Tempo totale: {calculateTotalTime(item)} min
