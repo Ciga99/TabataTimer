@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   listContent: {
-    padding: 16,
+    padding: 20,
     paddingBottom: 100,
   },
   loadingText: {
@@ -186,6 +186,7 @@ const styles = StyleSheet.create({
   },
   iconButton: {
     padding: 8,
+    marginRight: 8,
   },
   fabButton: {
     position: 'absolute',

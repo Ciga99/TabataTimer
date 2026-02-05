@@ -5,15 +5,21 @@ import { ThemedView } from '@/components/themed-view';
 import { useTraining } from '@/context/TrainingContext';
 import { Training } from '@/types/Training';
 import { useState } from 'react';
-import { Dimensions, StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet, TouchableOpacity, useWindowDimensions } from 'react-native';
 
-const screenWidth = Dimensions.get('window').width;
-const buttonSize = screenWidth - 16; // 8px margin per lato
-const smallButtonSize = (screenWidth / 6) - 16; // 7 bottoni con margin 8px per lato
+const MAX_BUTTON_SIZE = 400;
+const MAX_SMALL_BUTTON_SIZE = 60;
 
 export default function TabTwoScreen() {
-  const { training, setTraining } = useTraining();//Usa il tuo custom hook
+  const { training, setTraining } = useTraining();
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const { width, height } = useWindowDimensions();
+
+  // Calcola dimensioni reattive
+  const availableHeight = height - 200; // Spazio per header, testo, bottoni piccoli
+  const availableWidth = width - 16;
+  const buttonSize = Math.min(availableWidth, availableHeight, MAX_BUTTON_SIZE);
+  const smallButtonSize = Math.min((width / 6) - 16, MAX_SMALL_BUTTON_SIZE);
 
   const openModal = () => setIsModalVisible(true);
   const closeModal = () => setIsModalVisible(false);
@@ -23,34 +29,50 @@ export default function TabTwoScreen() {
     closeModal();
   };
 
+  // Stili dinamici per dimensioni reattive
+  const dynamicBigButton = {
+    width: buttonSize,
+    height: buttonSize,
+    borderRadius: buttonSize / 2,
+  };
+
+  const dynamicSmallButton = {
+    width: smallButtonSize,
+    height: smallButtonSize,
+  };
+
+  const dynamicSmallButtonText = {
+    fontSize: smallButtonSize * 0.25,
+  };
+
   return (
     <ThemedView style={styles.container}>
        <ThemedText>Tempo rimanente: 23:00</ThemedText>
       <TouchableOpacity
-        style={styles.bigButton}
+        style={[styles.bigButton, dynamicBigButton]}
         onPress={() => console.log('Premuto!')}
       >
-        <ThemedText >PREMI</ThemedText>
+        <ThemedText>PREMI</ThemedText>
       </TouchableOpacity>
 
       <ThemedView style={styles.containerButton}>
-        <SettingButtonTrayning style={styles.smallButton} title="workTime" onPress={openModal}>
-          <ThemedText style={styles.smallButtonText}>{training.timeWork}s</ThemedText>
+        <SettingButtonTrayning style={[styles.smallButton, dynamicSmallButton]} title="workTime" onPress={openModal}>
+          <ThemedText style={dynamicSmallButtonText}>{training.timeWork}s</ThemedText>
         </SettingButtonTrayning>
-        <SettingButtonTrayning style={styles.smallButton} title="restTime" onPress={openModal}>
-          <ThemedText style={styles.smallButtonText}>{training.timePause}s</ThemedText>
+        <SettingButtonTrayning style={[styles.smallButton, dynamicSmallButton]} title="restTime" onPress={openModal}>
+          <ThemedText style={dynamicSmallButtonText}>{training.timePause}s</ThemedText>
         </SettingButtonTrayning>
-        <SettingButtonTrayning style={styles.smallButton} title="series" onPress={openModal}>
-          <ThemedText style={styles.smallButtonText}>{training.serial}</ThemedText>
+        <SettingButtonTrayning style={[styles.smallButton, dynamicSmallButton]} title="series" onPress={openModal}>
+          <ThemedText style={dynamicSmallButtonText}>{training.serial}</ThemedText>
         </SettingButtonTrayning>
-        <SettingButtonTrayning style={styles.smallButton} title="seriesRest" onPress={openModal}>
-          <ThemedText style={styles.smallButtonText}>{training.timePauseCycle}s</ThemedText>
+        <SettingButtonTrayning style={[styles.smallButton, dynamicSmallButton]} title="seriesRest" onPress={openModal}>
+          <ThemedText style={dynamicSmallButtonText}>{training.timePauseCycle}s</ThemedText>
         </SettingButtonTrayning>
-        <SettingButtonTrayning style={styles.smallButton} title="cycles" onPress={openModal}>
-          <ThemedText style={styles.smallButtonText}>{training.cycles}</ThemedText>
+        <SettingButtonTrayning style={[styles.smallButton, dynamicSmallButton]} title="cycles" onPress={openModal}>
+          <ThemedText style={dynamicSmallButtonText}>{training.cycles}</ThemedText>
         </SettingButtonTrayning>
-        <SettingButtonTrayning style={styles.smallButton} title="cycleRest" onPress={openModal}>
-          <ThemedText style={styles.smallButtonText}>{training.timePauseCycle}s</ThemedText>
+        <SettingButtonTrayning style={[styles.smallButton, dynamicSmallButton]} title="cycleRest" onPress={openModal}>
+          <ThemedText style={dynamicSmallButtonText}>{training.timePauseCycle}s</ThemedText>
         </SettingButtonTrayning>
       </ThemedView>
 
@@ -73,9 +95,6 @@ const styles = StyleSheet.create({
   },
   bigButton: {
     margin: 8,
-    width: buttonSize,
-    height: buttonSize,
-    borderRadius: buttonSize / 2, // La metà di width/height per renderlo perfettamente rotondo
     backgroundColor: '#007AFF',
     justifyContent: 'center',
     alignItems: 'center',
@@ -88,18 +107,13 @@ const styles = StyleSheet.create({
   containerButton: {
     flexDirection: 'row',
     justifyContent: 'center',
+    flexWrap: 'wrap',
   },
   smallButton: {
     margin: 8,
-    width: smallButtonSize,
-    height: smallButtonSize,
-    // borderRadius: smallButtonSize / 2,s
     backgroundColor: '#007AFF',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 20,
   },
-  smallButtonText: {
-    fontSize: smallButtonSize * 0.25, // Testo proporzionale alla dimensione del bottone
-  }
 });
