@@ -4,7 +4,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useTraining } from '@/context/TrainingContext';
 import { Training } from '@/types/Training';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, useWindowDimensions } from 'react-native';
 import { formatTime } from '../helper';
 
@@ -27,14 +27,17 @@ export default function TabTwoScreen() {
 
   const handleSaveTraining = (updatedTraining: Training) => {
     setTraining(updatedTraining);
-    setTotalTieme();
     closeModal();
   };
 
-  const setTotalTieme = () => {
-    const totalTime = ((training.timeWork + training.serial )+ ( training.timePause * training.serial  ) * training.cycles )  + (training.timePauseCycle *training.cycles);
+  // Calcola il tempo totale quando training cambia
+  useEffect(() => {
+    const totalTime =
+      (training.timeWork * training.serial * training.cycles) +  // tempo lavoro
+      (training.timePause * (training.serial - 1) * training.cycles) +  // pause tra serie
+      (training.timePauseCycle * (training.cycles - 1));  // pause tra cicli
     setTimeRemaining(totalTime);
-  }
+  }, [training]);  // Si riesegue ogni volta che training cambia
 
   // Stili dinamici per dimensioni reattive
   const dynamicBigButton = {
