@@ -9,8 +9,8 @@ import { useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { formatTime } from '../helper';
 
-const MAX_BUTTON_SIZE = 400;
-const MAX_SMALL_BUTTON_SIZE = 200;
+const MAX_BUTTON_SIZE = 500;
+const MAX_SMALL_BUTTON_SIZE = 150;
 
 // Helper per il testo della fase
 const getPhaseLabel = (phase: WorkoutPhase, isPaused: boolean): string => {
@@ -44,7 +44,7 @@ export default function TabTwoScreen() {
   const [timeRemaining, setTimeRemaining] = useState(0);
 
   // Calcola dimensioni reattive
-  const availableHeight = height - 200;
+  const availableHeight = height - 0.6 * height; // lascia spazio per header/footer
   const availableWidth = width - 16;
   const buttonSize = Math.min(availableWidth, availableHeight, MAX_BUTTON_SIZE);
   const smallButtonSize = Math.min((width / 3) - 16, MAX_SMALL_BUTTON_SIZE);
