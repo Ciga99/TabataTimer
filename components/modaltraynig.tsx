@@ -191,15 +191,6 @@ export function TrainingModal({
                 placeholder="30"
                 placeholderTextColor={isDark ? '#888' : '#999'}
               />
-
-              {/* Tempo totale (calcolato) */}
-              <View style={styles.totalTimeContainer}>
-                <ThemedText style={styles.label}>Tempo totale allenamento</ThemedText>
-                <ThemedText style={styles.totalTimeValue}>
-                  {formatTime(formData.timeTotal)}
-                </ThemedText>
-              </View>
-
               {/* Voce attiva */}
               <View style={styles.switchRow}>
                 <ThemedText style={styles.label}>Voce attiva</ThemedText>

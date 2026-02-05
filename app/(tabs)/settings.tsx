@@ -87,6 +87,7 @@ export default function TabTwoScreen() {
             <SettingRow label="Volume" slider={true}> 
               <ThemedView  lightColor="transparent" darkColor="transparent">
                 <Slider
+                style={{ marginTop: 20 }}
                   minimumValue={0}
                   maximumValue={1}
                   minimumTrackTintColor="#007AFF"

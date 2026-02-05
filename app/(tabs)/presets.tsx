@@ -148,9 +148,6 @@ export default function PresetsScreen() {
                       <ThemedText style={styles.details}>
                         Cicli: {item.cycles} - Serie: {item.serial} - tempo serie: {item.timeWork}s
                       </ThemedText>
-                      <ThemedText style={styles.details}>
-                        Tempo totale: {calculateTotalTime(item)} min
-                      </ThemedText>
                     </View>
 
                     <TouchableOpacity
