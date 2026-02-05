@@ -6,8 +6,9 @@ import { IconSymbol } from '@/components/ui/icon-symbol';
 import { usePresets } from '@/context/PresetsContext';
 import { useTraining } from '@/context/TrainingContext';
 import { Preset, Training } from '@/types/Training';
+import { router } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, Animated, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Animated, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
 
 export default function PresetsScreen() {
@@ -56,22 +57,12 @@ export default function PresetsScreen() {
   const handleSelectPreset = (preset: Preset) => {
     const training = presetToTraining(preset);
     setTraining(training);
-    Alert.alert(
-      'Preset Selezionato',
-      `"${preset.title}" è stato impostato come allenamento attivo.`
-    );
+    router.navigate('/tabata');
   };
 
   // Elimina con conferma
   const handleDeletePreset = (id: string, title: string) => {
-    Alert.alert(
-      'Elimina Preset',
-      `Sei sicuro di voler eliminare "${title}"?`,
-      [
-        { text: 'Annulla', style: 'cancel' },
-        { text: 'Elimina', style: 'destructive', onPress: () => deletePreset(id) },
-      ]
-    );
+    deletePreset(id);
   };
 
   const calculateTotalTime = (preset: Preset): number => {
