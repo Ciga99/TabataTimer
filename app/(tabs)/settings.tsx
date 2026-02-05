@@ -3,7 +3,7 @@ import { PickerModal } from '@/components/modalSpeker';
 import { SettingRow } from '@/components/SettingRow';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { LANGUAGES, SPEAKERS, useSettings } from '@/context/SettingsContext';
+import { LANGUAGES, useSettings } from '@/context/SettingsContext';
 import Slider from '@react-native-community/slider';
 import React, { useState } from 'react';
 import { StyleSheet, Switch, TouchableOpacity, useColorScheme } from 'react-native';
@@ -69,7 +69,7 @@ export default function TabTwoScreen() {
                 title="Seleziona Lingua"
               />
             </SettingRow>
-            <SettingRow label="Voce"> 
+            {/* <SettingRow label="Voce"> 
               <TouchableOpacity
                 onPress={() => setSpeakerPickerVisible(true)}
                 style={[styles.pickerButton, { borderColor: '#ffffff', borderWidth: 1 }]}>
@@ -83,8 +83,7 @@ export default function TabTwoScreen() {
                   onSelect={setVoice}
                   title="Seleziona Voce"
                 />
-              {/* <ThemedText onPress={() => setSpeakerPickerVisible(true)}>{voice}</ThemedText> */}
-            </SettingRow>
+            </SettingRow> */}
             <SettingRow label="Volume" slider={true}> 
               <ThemedView  lightColor="transparent" darkColor="transparent">
                 <Slider

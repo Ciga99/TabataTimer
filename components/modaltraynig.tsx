@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import { PickerModal } from './modalSpeker';
 import { ThemedText } from './themed-text';
 import { ThemedView } from './themed-view';
 
@@ -220,27 +221,14 @@ export function TrainingModal({
                     <ThemedText>{formData.voice}</ThemedText>
                   </TouchableOpacity>
 
-                  {showVoicePicker && (
-                    <View style={styles.voiceOptions}>
-                      {SPEAKERS.map((speaker) => (
-                        <TouchableOpacity
-                          key={speaker}
-                          style={[
-                            styles.voiceOption,
-                            { backgroundColor: formData.voice === speaker ? '#007AFF' : 'transparent' }
-                          ]}
-                          onPress={() => {
-                            updateField('voice', speaker);
-                            setShowVoicePicker(false);
-                          }}>
-                          <ThemedText
-                            style={{ color: formData.voice === speaker ? 'white' : (isDark ? 'white' : 'black') }}>
-                            {speaker}
-                          </ThemedText>
-                        </TouchableOpacity>
-                      ))}
-                    </View>
-                  )}
+                  <PickerModal
+                    visible={showVoicePicker}
+                    onClose={() => setShowVoicePicker(false)}
+                    options={SPEAKERS}
+                    selectedValue={formData.voice}
+                    onSelect={(value) => updateField('voice', value)}
+                    title="Seleziona Voce"
+                  />
                 </>
               )}
 
