@@ -17,7 +17,8 @@ const localStyles = StyleSheet.create({
         justifyContent: 'center',
     },
     title: {
-        fontSize: 8,
+        // fontSize: 8,
         marginBottom: 2,
+        margin:2,
     },
 });

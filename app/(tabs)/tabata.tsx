@@ -10,7 +10,7 @@ import { StyleSheet, TouchableOpacity, useWindowDimensions, View } from 'react-n
 import { formatTime } from '../helper';
 
 const MAX_BUTTON_SIZE = 400;
-const MAX_SMALL_BUTTON_SIZE = 60;
+const MAX_SMALL_BUTTON_SIZE = 200;
 
 // Helper per il testo della fase
 const getPhaseLabel = (phase: WorkoutPhase, isPaused: boolean): string => {
@@ -47,7 +47,7 @@ export default function TabTwoScreen() {
   const availableHeight = height - 200;
   const availableWidth = width - 16;
   const buttonSize = Math.min(availableWidth, availableHeight, MAX_BUTTON_SIZE);
-  const smallButtonSize = Math.min((width / 6) - 16, MAX_SMALL_BUTTON_SIZE);
+  const smallButtonSize = Math.min((width / 3) - 16, MAX_SMALL_BUTTON_SIZE);
 
   const openModal = () => {
     // Non aprire modal durante workout
@@ -167,19 +167,27 @@ export default function TabTwoScreen() {
         </SettingButtonTrayning>
 
         <SettingButtonTrayning
-          style={[styles.smallButton, dynamicSmallButton, workoutState.isWorking && styles.progressButton]}
-          title="series"
-          onPress={openModal}
-        >
-          <ThemedText style={dynamicSmallButtonText}>{getSeriesDisplay()}</ThemedText>
-        </SettingButtonTrayning>
-
-        <SettingButtonTrayning
           style={[styles.smallButton, dynamicSmallButton, workoutState.isWorking && styles.disabledButton]}
           title="seriesRest"
           onPress={openModal}
         >
           <ThemedText style={dynamicSmallButtonText}>{training.timePauseCycle}s</ThemedText>
+        </SettingButtonTrayning>
+
+        <SettingButtonTrayning
+          style={[styles.smallButton, dynamicSmallButton, workoutState.isWorking && styles.disabledButton]}
+          title="cycleRest"
+          onPress={openModal}
+        >
+          <ThemedText style={dynamicSmallButtonText}>{training.timePauseCycle}s</ThemedText>
+        </SettingButtonTrayning>
+
+        <SettingButtonTrayning
+          style={[styles.smallButton, dynamicSmallButton, workoutState.isWorking && styles.progressButton]}
+          title="series"
+          onPress={openModal}
+        >
+          <ThemedText style={dynamicSmallButtonText}>{getSeriesDisplay()}</ThemedText>
         </SettingButtonTrayning>
 
         <SettingButtonTrayning
@@ -190,13 +198,6 @@ export default function TabTwoScreen() {
           <ThemedText style={dynamicSmallButtonText}>{getCyclesDisplay()}</ThemedText>
         </SettingButtonTrayning>
 
-        <SettingButtonTrayning
-          style={[styles.smallButton, dynamicSmallButton, workoutState.isWorking && styles.disabledButton]}
-          title="cycleRest"
-          onPress={openModal}
-        >
-          <ThemedText style={dynamicSmallButtonText}>{training.timePauseCycle}s</ThemedText>
-        </SettingButtonTrayning>
       </ThemedView>
 
       <TrainingModal
@@ -213,8 +214,8 @@ export default function TabTwoScreen() {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: 'center', // allinea in orizzontale
+    // justifyContent: 'center', // allinea in verticale 
     flex: 1,
   },
   totalTimeText: {
@@ -254,6 +255,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   containerButton: {
+
     flexDirection: 'row',
     justifyContent: 'center',
     flexWrap: 'wrap',
