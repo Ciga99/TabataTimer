@@ -25,7 +25,18 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
+        headerShown: true,
+        headerTitle: 'TABATA TIMER',
+        headerTitleAlign: 'center',
+        headerStyle: {
+          backgroundColor: Colors[colorScheme ?? 'light'].background,
+        },
+        headerTitleStyle: {
+          fontWeight: 'bold',
+          fontSize: 18,
+        },
+        headerTintColor: Colors[colorScheme ?? 'light'].text,
+        headerShadowVisible: false,
         tabBarShowLabel: false,
         tabBarStyle: isWorking ? { display: 'none' } : styles.tabBarStyle,
       }}
