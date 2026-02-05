@@ -6,6 +6,7 @@ import 'react-native-reanimated';
 import { PresetsProvider } from '@/context/PresetsContext';
 import { SettingsProvider } from '@/context/SettingsContext';
 import { TrainingProvider } from '@/context/TrainingContext';
+import { WorkoutProvider } from '@/context/WorkoutContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
 
@@ -28,14 +29,16 @@ export default function RootLayout() {
     //Il Provider deve essere un componente GENITORE di tutti i componenti che usano il Context.
     <SettingsProvider>
       <TrainingProvider>
-        <PresetsProvider>
-          <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-            <Stack>
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            </Stack>
-            <StatusBar style="auto" />
-          </ThemeProvider>
-        </PresetsProvider>
+        <WorkoutProvider>
+          <PresetsProvider>
+            <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+              <Stack>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              </Stack>
+              <StatusBar style="auto" />
+            </ThemeProvider>
+          </PresetsProvider>
+        </WorkoutProvider>
       </TrainingProvider>
     </SettingsProvider>
   );

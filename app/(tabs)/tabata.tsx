@@ -3,26 +3,58 @@ import { TrainingModal } from '@/components/modaltraynig';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useTraining } from '@/context/TrainingContext';
+import { useWorkout, WorkoutPhase } from '@/context/WorkoutContext';
 import { Training } from '@/types/Training';
 import { useEffect, useState } from 'react';
-import { StyleSheet, TouchableOpacity, useWindowDimensions } from 'react-native';
+import { StyleSheet, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { formatTime } from '../helper';
 
 const MAX_BUTTON_SIZE = 400;
 const MAX_SMALL_BUTTON_SIZE = 60;
 
+// Helper per il testo della fase
+const getPhaseLabel = (phase: WorkoutPhase, isPaused: boolean): string => {
+  if (isPaused) return 'PAUSA';
+  switch (phase) {
+    case 'work': return 'LAVORO';
+    case 'rest': return 'RIPOSO';
+    case 'cycle_rest': return 'PAUSA CICLO';
+    case 'finished': return 'FINITO!';
+    default: return 'PREMI';
+  }
+};
+
+// Helper per il colore della fase
+const getPhaseColor = (phase: WorkoutPhase, isPaused: boolean): string => {
+  if (isPaused) return '#9E9E9E';  // Grigio quando in pausa
+  switch (phase) {
+    case 'work': return '#4CAF50';      // Verde
+    case 'rest': return '#FF9800';       // Arancione
+    case 'cycle_rest': return '#2196F3'; // Blu
+    case 'finished': return '#9C27B0';   // Viola
+    default: return '#007AFF';           // Blu default
+  }
+};
+
 export default function TabTwoScreen() {
   const { training, setTraining } = useTraining();
+  const { workoutState, startWorkout, pauseWorkout, resumeWorkout } = useWorkout();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { width, height } = useWindowDimensions();
-  const [timeRemaining, setTimeRemaining] = useState(0); // Stato per il tempo rimanente
+  const [timeRemaining, setTimeRemaining] = useState(0);
+
   // Calcola dimensioni reattive
-  const availableHeight = height - 200; // Spazio per header, testo, bottoni piccoli
+  const availableHeight = height - 200;
   const availableWidth = width - 16;
   const buttonSize = Math.min(availableWidth, availableHeight, MAX_BUTTON_SIZE);
   const smallButtonSize = Math.min((width / 6) - 16, MAX_SMALL_BUTTON_SIZE);
 
-  const openModal = () => setIsModalVisible(true);
+  const openModal = () => {
+    // Non aprire modal durante workout
+    if (!workoutState.isWorking) {
+      setIsModalVisible(true);
+    }
+  };
   const closeModal = () => setIsModalVisible(false);
 
   const handleSaveTraining = (updatedTraining: Training) => {
@@ -30,20 +62,54 @@ export default function TabTwoScreen() {
     closeModal();
   };
 
-  // Calcola il tempo totale quando training cambia
+  // Handler per il bottone grande
+  const handleBigButtonPress = () => {
+    if (!workoutState.isWorking) {
+      // Non in esecuzione: AVVIA
+      startWorkout(training);
+    } else if (workoutState.isPaused) {
+      // In pausa: RIPRENDI
+      resumeWorkout();
+    } else {
+      // In esecuzione: PAUSA
+      pauseWorkout();
+    }
+  };
+
+  // Calcola il tempo totale quando training cambia E non siamo in workout
   useEffect(() => {
-    const totalTime =
-      (training.timeWork * training.serial * training.cycles) +  // tempo lavoro
-      (training.timePause * (training.serial - 1) * training.cycles) +  // pause tra serie
-      (training.timePauseCycle * (training.cycles - 1));  // pause tra cicli
-    setTimeRemaining(totalTime);
-  }, [training]);  // Si riesegue ogni volta che training cambia
+    if (!workoutState.isWorking) {
+      const totalTime =
+        (training.timeWork * training.serial * training.cycles) +
+        (training.timePause * (training.serial - 1) * training.cycles) +
+        (training.timePauseCycle * (training.cycles - 1));
+      setTimeRemaining(totalTime);
+    }
+  }, [training, workoutState.isWorking]);
+
+  // Tempo da visualizzare
+  const displayedTime = workoutState.isWorking
+    ? workoutState.totalTimeRemaining
+    : timeRemaining;
+
+  // Helper per mostrare progresso serie
+  const getSeriesDisplay = () => {
+    if (!workoutState.isWorking) return training.serial.toString();
+    return `${workoutState.currentSerial}/${training.serial}`;
+  };
+
+  // Helper per mostrare progresso cicli
+  const getCyclesDisplay = () => {
+    if (!workoutState.isWorking) return training.cycles.toString();
+    return `${workoutState.currentCycle}/${training.cycles}`;
+  };
 
   // Stili dinamici per dimensioni reattive
   const dynamicBigButton = {
     width: buttonSize,
     height: buttonSize,
     borderRadius: buttonSize / 2,
+    backgroundColor: getPhaseColor(workoutState.phase, workoutState.isPaused),
   };
 
   const dynamicSmallButton = {
@@ -57,31 +123,78 @@ export default function TabTwoScreen() {
 
   return (
     <ThemedView style={styles.container}>
-       <ThemedText>Tempo rimanente: {formatTime(timeRemaining)}</ThemedText>
+      <ThemedText style={styles.totalTimeText}>
+        Tempo totale: {formatTime(displayedTime)}
+      </ThemedText>
+
       <TouchableOpacity
         style={[styles.bigButton, dynamicBigButton]}
-        onPress={() => console.log('Premuto!')}
+        onPress={handleBigButtonPress}
+        activeOpacity={0.8}
       >
-        <ThemedText>PREMI</ThemedText>
+        <View style={styles.bigButtonContent}>
+          <ThemedText style={styles.phaseText}>
+            {getPhaseLabel(workoutState.phase, workoutState.isPaused)}
+          </ThemedText>
+
+          {workoutState.isWorking && (
+            <ThemedText style={styles.timerText}>
+              {formatTime(workoutState.phaseTimeRemaining)}
+            </ThemedText>
+          )}
+
+          {workoutState.phase === 'finished' && (
+            <ThemedText style={styles.subText}>Tap per ricominciare</ThemedText>
+          )}
+        </View>
       </TouchableOpacity>
 
       <ThemedView style={styles.containerButton}>
-        <SettingButtonTrayning style={[styles.smallButton, dynamicSmallButton]} title="workTime" onPress={openModal}>
+        <SettingButtonTrayning
+          style={[styles.smallButton, dynamicSmallButton, workoutState.isWorking && styles.disabledButton]}
+          title="workTime"
+          onPress={openModal}
+        >
           <ThemedText style={dynamicSmallButtonText}>{training.timeWork}s</ThemedText>
         </SettingButtonTrayning>
-        <SettingButtonTrayning style={[styles.smallButton, dynamicSmallButton]} title="restTime" onPress={openModal}>
+
+        <SettingButtonTrayning
+          style={[styles.smallButton, dynamicSmallButton, workoutState.isWorking && styles.disabledButton]}
+          title="restTime"
+          onPress={openModal}
+        >
           <ThemedText style={dynamicSmallButtonText}>{training.timePause}s</ThemedText>
         </SettingButtonTrayning>
-        <SettingButtonTrayning style={[styles.smallButton, dynamicSmallButton]} title="series" onPress={openModal}>
-          <ThemedText style={dynamicSmallButtonText}>{training.serial}</ThemedText>
+
+        <SettingButtonTrayning
+          style={[styles.smallButton, dynamicSmallButton, workoutState.isWorking && styles.progressButton]}
+          title="series"
+          onPress={openModal}
+        >
+          <ThemedText style={dynamicSmallButtonText}>{getSeriesDisplay()}</ThemedText>
         </SettingButtonTrayning>
-        <SettingButtonTrayning style={[styles.smallButton, dynamicSmallButton]} title="seriesRest" onPress={openModal}>
+
+        <SettingButtonTrayning
+          style={[styles.smallButton, dynamicSmallButton, workoutState.isWorking && styles.disabledButton]}
+          title="seriesRest"
+          onPress={openModal}
+        >
           <ThemedText style={dynamicSmallButtonText}>{training.timePauseCycle}s</ThemedText>
         </SettingButtonTrayning>
-        <SettingButtonTrayning style={[styles.smallButton, dynamicSmallButton]} title="cycles" onPress={openModal}>
-          <ThemedText style={dynamicSmallButtonText}>{training.cycles}</ThemedText>
+
+        <SettingButtonTrayning
+          style={[styles.smallButton, dynamicSmallButton, workoutState.isWorking && styles.progressButton]}
+          title="cycles"
+          onPress={openModal}
+        >
+          <ThemedText style={dynamicSmallButtonText}>{getCyclesDisplay()}</ThemedText>
         </SettingButtonTrayning>
-        <SettingButtonTrayning style={[styles.smallButton, dynamicSmallButton]} title="cycleRest" onPress={openModal}>
+
+        <SettingButtonTrayning
+          style={[styles.smallButton, dynamicSmallButton, workoutState.isWorking && styles.disabledButton]}
+          title="cycleRest"
+          onPress={openModal}
+        >
           <ThemedText style={dynamicSmallButtonText}>{training.timePauseCycle}s</ThemedText>
         </SettingButtonTrayning>
       </ThemedView>
@@ -104,6 +217,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flex: 1,
   },
+  totalTimeText: {
+    fontSize: 18,
+    marginBottom: 8,
+  },
   bigButton: {
     margin: 8,
     backgroundColor: '#007AFF',
@@ -114,6 +231,27 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 5,
     elevation: 8,
+  },
+  bigButtonContent: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  phaseText: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: 'white',
+    textAlign: 'center',
+  },
+  timerText: {
+    fontSize: 56,
+    fontWeight: 'bold',
+    color: 'white',
+    marginTop: 8,
+  },
+  subText: {
+    fontSize: 14,
+    color: 'rgba(255,255,255,0.8)',
+    marginTop: 8,
   },
   containerButton: {
     flexDirection: 'row',
@@ -126,5 +264,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 20,
+  },
+  disabledButton: {
+    opacity: 0.5,
+  },
+  progressButton: {
+    backgroundColor: '#4CAF50',
   },
 });

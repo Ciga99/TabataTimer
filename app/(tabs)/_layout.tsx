@@ -1,15 +1,18 @@
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { TabIcon } from '@/components/ui/tabIcon';
 import { Colors } from '@/constants/theme';
+import { useWorkout } from '@/context/WorkoutContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Tabs } from 'expo-router';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 function WorkingTabBar() {
+  const { stopWorkout } = useWorkout();
+
   return (
     <View style={styles.workingTabBarContainer}>
-      <TouchableOpacity style={styles.workingButton} activeOpacity={0.8}>
+      <TouchableOpacity style={styles.workingButton} activeOpacity={0.8} onPress={stopWorkout}>
         <IconSymbol name="stop" size={24} color="white" />
         <Text style={styles.workingButtonText}>STOP</Text>
       </TouchableOpacity>
@@ -19,7 +22,8 @@ function WorkingTabBar() {
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-  const isWorking = false;
+  const { workoutState } = useWorkout();
+  const isWorking = workoutState.isWorking;
 
   return (
     <Tabs
