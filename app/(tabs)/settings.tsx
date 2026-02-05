@@ -31,7 +31,6 @@ export default function TabTwoScreen() {
   return (
   <ThemedView style={styles.container}>
     <ThemedView> 
-      <ThemedText >Impostazioni</ThemedText>
       {/* Sezione Aspetto */}
       <Card title="Aspetto">
         <SettingRow label="Modalità Scura">

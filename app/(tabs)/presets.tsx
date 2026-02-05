@@ -7,7 +7,8 @@ import { usePresets } from '@/context/PresetsContext';
 import { useTraining } from '@/context/TrainingContext';
 import { Preset, Training } from '@/types/Training';
 import React, { useState } from 'react';
-import { Alert, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Alert, Animated, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Swipeable } from 'react-native-gesture-handler';
 
 export default function PresetsScreen() {
   const { presets, addPreset, updatePreset, deletePreset, getPresetById, isLoaded } = usePresets();
@@ -92,6 +93,39 @@ export default function PresetsScreen() {
     return undefined;
   };
 
+  // Render azione sinistra per swipe (cestino)
+  const renderLeftActions = (
+    progress: Animated.AnimatedInterpolation<number>,// quanto hai fatto swipe (0 → 1)
+    _dragX: Animated.AnimatedInterpolation<number>,// posizione X del dito 
+    item: Preset
+  ) => {
+     // Animazione: il cestino parte piccolo (0.8) e diventa grande (1) mentre fai swipe
+    const scale = progress.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0.8, 1],
+      extrapolate: 'clamp',
+    });
+
+    return (
+      <TouchableOpacity
+        style={styles.deleteAction}
+        onPress={() => handleDeletePreset(item.id, item.title)}
+      >
+        <Animated.View style={{ transform: [{ scale }] }}>
+          <IconSymbol name="trash" size={28} color="white" />
+        </Animated.View>
+      </TouchableOpacity>
+    );
+  };
+
+  // Gestisce lo swipe completo
+  const handleSwipeOpen = (direction: 'left' | 'right', item: Preset, swipeableRef: Swipeable | null) => {
+    if (direction === 'left') {
+      swipeableRef?.close();
+      deletePreset(item.id);
+    }
+  };
+
   if (!isLoaded) {
     return (
       <ThemedView style={styles.container}>
@@ -106,35 +140,39 @@ export default function PresetsScreen() {
         data={presets}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
-        renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => handleSelectPreset(item)}>
-            <Card title={item.title}>
-              <View style={styles.cardContent}>
-                <View style={styles.infoContainer}>
-                  <ThemedText style={styles.description}>{item.description}</ThemedText>
-                  <ThemedText style={styles.details}>
-                    Cicli: {item.cycles} - Serie: {item.serial} - tempo serie: {item.timeWork}s
-                  </ThemedText>
-                  <ThemedText style={styles.details}>
-                    Tempo totale: {calculateTotalTime(item)} min
-                  </ThemedText>
-                </View>
+        renderItem={({ item }) => {
+          let swipeableRef: Swipeable | null = null;// Creo un riferimento per poter chiudere lo swipe programmaticamente
+          return (
+            <Swipeable
+              ref={(ref) => { swipeableRef = ref; }}
+              renderLeftActions={(progress, dragX) => renderLeftActions(progress, dragX, item)}
+              onSwipeableOpen={(direction) => handleSwipeOpen(direction, item, swipeableRef)}
+              leftThreshold={80}// Quanto devi fare swipe per "completare" (80 pixel)
+            >
+              <TouchableOpacity onPress={() => handleSelectPreset(item)}>
+                <Card title={item.title}>
+                  <View style={styles.cardContent}>
+                    <View style={styles.infoContainer}>
+                      <ThemedText style={styles.description}>{item.description}</ThemedText>
+                      <ThemedText style={styles.details}>
+                        Cicli: {item.cycles} - Serie: {item.serial} - tempo serie: {item.timeWork}s
+                      </ThemedText>
+                      <ThemedText style={styles.details}>
+                        Tempo totale: {calculateTotalTime(item)} min
+                      </ThemedText>
+                    </View>
 
-                <TouchableOpacity
-                  style={styles.iconButton}
-                  onPress={() => openModalForEdit(item.id)}>
-                  <IconSymbol name="pencil" size={22} color="#565656" />
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={styles.iconButton}
-                  onPress={() => handleDeletePreset(item.id, item.title)}>
-                  <IconSymbol name="trash" size={22} color="#ff3b30" />
-                </TouchableOpacity>
-              </View>
-            </Card>
-          </TouchableOpacity>
-        )}
+                    <TouchableOpacity
+                      style={styles.iconButton}
+                      onPress={() => openModalForEdit(item.id)}>
+                      <IconSymbol name="pencil" size={22} color="#565656" />
+                    </TouchableOpacity>
+                  </View>
+                </Card>
+              </TouchableOpacity>
+            </Swipeable>
+          );
+        }}
       />
 
       <TouchableOpacity
@@ -161,6 +199,14 @@ const styles = StyleSheet.create({
   listContent: {
     padding: 20,
     paddingBottom: 100,
+  },
+  deleteAction: {
+    backgroundColor: '#ff3b30',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 80,
+    marginVertical: 5,
+    borderRadius: 20,
   },
   loadingText: {
     textAlign: 'center',
