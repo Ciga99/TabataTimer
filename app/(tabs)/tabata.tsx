@@ -30,8 +30,8 @@ const getPhaseColor = (phase: WorkoutPhase, isPaused: boolean): string => {
   switch (phase) {
     case 'work': return '#4CAF50';      // Verde
     case 'rest': return '#FF9800';       // Arancione
-    case 'cycle_rest': return '#2196F3'; // Blu
-    case 'finished': return '#9C27B0';   // Viola
+    case 'cycle_rest': return '#f0f321'; // Blu
+    case 'finished': return '#3027b0';   // Viola
     default: return '#007AFF';           // Blu default
   }
 };
