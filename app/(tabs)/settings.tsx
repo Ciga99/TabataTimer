@@ -69,21 +69,6 @@ export default function TabTwoScreen() {
                 title="Seleziona Lingua"
               />
             </SettingRow>
-            {/* <SettingRow label="Voce"> 
-              <TouchableOpacity
-                onPress={() => setSpeakerPickerVisible(true)}
-                style={[styles.pickerButton, { borderColor: '#ffffff', borderWidth: 1 }]}>
-              <ThemedText style={styles.pickerButtonText}>{voice}</ThemedText>
-              </TouchableOpacity>
-                <PickerModal
-                  visible={speakerPickerVisible}
-                  onClose={() => setSpeakerPickerVisible(false)}
-                  options={SPEAKERS}
-                  selectedValue={voice}
-                  onSelect={setVoice}
-                  title="Seleziona Voce"
-                />
-            </SettingRow> */}
             <SettingRow label="Volume" slider={true}> 
               <ThemedView  lightColor="transparent" darkColor="transparent">
                 <Slider

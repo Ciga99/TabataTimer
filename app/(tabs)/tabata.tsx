@@ -6,6 +6,7 @@ import { useTraining } from '@/context/TrainingContext';
 import { Training } from '@/types/Training';
 import { useState } from 'react';
 import { StyleSheet, TouchableOpacity, useWindowDimensions } from 'react-native';
+import { formatTime } from '../helper';
 
 const MAX_BUTTON_SIZE = 400;
 const MAX_SMALL_BUTTON_SIZE = 60;
@@ -14,7 +15,7 @@ export default function TabTwoScreen() {
   const { training, setTraining } = useTraining();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { width, height } = useWindowDimensions();
-
+  const [timeRemaining, setTimeRemaining] = useState(0); // Stato per il tempo rimanente
   // Calcola dimensioni reattive
   const availableHeight = height - 200; // Spazio per header, testo, bottoni piccoli
   const availableWidth = width - 16;
@@ -26,8 +27,14 @@ export default function TabTwoScreen() {
 
   const handleSaveTraining = (updatedTraining: Training) => {
     setTraining(updatedTraining);
+    setTotalTieme();
     closeModal();
   };
+
+  const setTotalTieme = () => {
+    const totalTime = ((training.timeWork + training.serial )+ ( training.timePause * training.serial  ) * training.cycles )  + (training.timePauseCycle *training.cycles);
+    setTimeRemaining(totalTime);
+  }
 
   // Stili dinamici per dimensioni reattive
   const dynamicBigButton = {
@@ -47,7 +54,7 @@ export default function TabTwoScreen() {
 
   return (
     <ThemedView style={styles.container}>
-       <ThemedText>Tempo rimanente: 23:00</ThemedText>
+       <ThemedText>Tempo rimanente: {formatTime(timeRemaining)}</ThemedText>
       <TouchableOpacity
         style={[styles.bigButton, dynamicBigButton]}
         onPress={() => console.log('Premuto!')}

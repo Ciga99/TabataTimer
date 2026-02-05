@@ -65,13 +65,6 @@ export default function PresetsScreen() {
     deletePreset(id);
   };
 
-  const calculateTotalTime = (preset: Preset): number => {
-    const workTime = preset.timeWork * preset.serial * preset.cycles;
-    const pauseTime = preset.timePause * (preset.serial - 1) * preset.cycles;
-    const cyclePauseTime = preset.timePauseCycle * (preset.cycles - 1);
-    return Math.round((workTime + pauseTime + cyclePauseTime) / 60);
-  };
-
   // Ottieni i dati iniziali per il modal
   const getModalTraining = (): Training | undefined => {
     if (isCreatingNew) {
