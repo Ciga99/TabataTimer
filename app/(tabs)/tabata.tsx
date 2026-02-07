@@ -5,6 +5,7 @@ import { ThemedView } from '@/components/themed-view';
 import { useTraining } from '@/context/TrainingContext';
 import { useWorkout, WorkoutPhase } from '@/context/WorkoutContext';
 import { Training } from '@/types/Training';
+import * as ScreenOrientation from 'expo-screen-orientation';
 import { useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { formatTime } from '../helper';
@@ -37,6 +38,7 @@ const getPhaseColor = (phase: WorkoutPhase, isPaused: boolean): string => {
 };
 
 export default function TabTwoScreen() {
+  const [orientation, setOrientation] = useState<ScreenOrientation.Orientation | null>(null);
   const { training, setTraining } = useTraining();
   const { workoutState, startWorkout, pauseWorkout, resumeWorkout } = useWorkout();
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -77,6 +79,26 @@ export default function TabTwoScreen() {
       pauseWorkout();
     }
   };
+
+  useEffect(() => {
+    // 1. Controlla l'orientamento iniziale
+    const checkOrientation = async () => {
+      const current = await ScreenOrientation.getOrientationAsync();
+      setOrientation(current);
+    };
+    checkOrientation();
+
+    // 2. Ascolta i cambiamenti futuri
+    const subscription = ScreenOrientation.addOrientationChangeListener((event) => {
+      setOrientation(event.orientationInfo.orientation);
+    });
+    return () => ScreenOrientation.removeOrientationChangeListener(subscription);
+  }, []);
+
+  // Verifica se siamo in landscape
+  let isLandscape =
+    orientation === ScreenOrientation.Orientation.LANDSCAPE_LEFT ||
+    orientation === ScreenOrientation.Orientation.LANDSCAPE_RIGHT;
 
   // Calcola il tempo totale quando training cambia E non siamo in workout
   useEffect(() => {
@@ -150,65 +172,68 @@ export default function TabTwoScreen() {
           )}
         </View>
       </TouchableOpacity>
+      {!isLandscape && (   
+        <>  
+          <ThemedView style={styles.containerButton}>
+            <SettingButtonTrayning
+              style={[styles.smallButton, dynamicSmallButton, workoutState.isWorking && styles.disabledButton]}
+              title="workTime"
+              onPress={openModal}
+            >
+              <ThemedText style={dynamicSmallButtonText}>{training.timeWork}s</ThemedText>
+            </SettingButtonTrayning>
 
-      <ThemedView style={styles.containerButton}>
-        <SettingButtonTrayning
-          style={[styles.smallButton, dynamicSmallButton, workoutState.isWorking && styles.disabledButton]}
-          title="workTime"
-          onPress={openModal}
-        >
-          <ThemedText style={dynamicSmallButtonText}>{training.timeWork}s</ThemedText>
-        </SettingButtonTrayning>
+            <SettingButtonTrayning
+              style={[styles.smallButton, dynamicSmallButton, workoutState.isWorking && styles.disabledButton]}
+              title="restTime"
+              onPress={openModal}
+            >
+              <ThemedText style={dynamicSmallButtonText}>{training.timePause}s</ThemedText>
+            </SettingButtonTrayning>
 
-        <SettingButtonTrayning
-          style={[styles.smallButton, dynamicSmallButton, workoutState.isWorking && styles.disabledButton]}
-          title="restTime"
-          onPress={openModal}
-        >
-          <ThemedText style={dynamicSmallButtonText}>{training.timePause}s</ThemedText>
-        </SettingButtonTrayning>
+            <SettingButtonTrayning
+              style={[styles.smallButton, dynamicSmallButton, workoutState.isWorking && styles.disabledButton]}
+              title="seriesRest"
+              onPress={openModal}
+            >
+              <ThemedText style={dynamicSmallButtonText}>{training.timePauseCycle}s</ThemedText>
+            </SettingButtonTrayning>
 
-        <SettingButtonTrayning
-          style={[styles.smallButton, dynamicSmallButton, workoutState.isWorking && styles.disabledButton]}
-          title="seriesRest"
-          onPress={openModal}
-        >
-          <ThemedText style={dynamicSmallButtonText}>{training.timePauseCycle}s</ThemedText>
-        </SettingButtonTrayning>
+            <SettingButtonTrayning
+              style={[styles.smallButton, dynamicSmallButton, workoutState.isWorking && styles.disabledButton]}
+              title="cycleRest"
+              onPress={openModal}
+            >
+              <ThemedText style={dynamicSmallButtonText}>{training.timePauseCycle}s</ThemedText>
+            </SettingButtonTrayning>
 
-        <SettingButtonTrayning
-          style={[styles.smallButton, dynamicSmallButton, workoutState.isWorking && styles.disabledButton]}
-          title="cycleRest"
-          onPress={openModal}
-        >
-          <ThemedText style={dynamicSmallButtonText}>{training.timePauseCycle}s</ThemedText>
-        </SettingButtonTrayning>
+            <SettingButtonTrayning
+              style={[styles.smallButton, dynamicSmallButton, workoutState.isWorking && styles.progressButton]}
+              title="series"
+              onPress={openModal}
+            >
+              <ThemedText style={dynamicSmallButtonText}>{getSeriesDisplay()}</ThemedText>
+            </SettingButtonTrayning>
 
-        <SettingButtonTrayning
-          style={[styles.smallButton, dynamicSmallButton, workoutState.isWorking && styles.progressButton]}
-          title="series"
-          onPress={openModal}
-        >
-          <ThemedText style={dynamicSmallButtonText}>{getSeriesDisplay()}</ThemedText>
-        </SettingButtonTrayning>
+            <SettingButtonTrayning
+              style={[styles.smallButton, dynamicSmallButton, workoutState.isWorking && styles.progressButton]}
+              title="cycles"
+              onPress={openModal}
+            >
+              <ThemedText style={dynamicSmallButtonText}>{getCyclesDisplay()}</ThemedText>
+            </SettingButtonTrayning>
 
-        <SettingButtonTrayning
-          style={[styles.smallButton, dynamicSmallButton, workoutState.isWorking && styles.progressButton]}
-          title="cycles"
-          onPress={openModal}
-        >
-          <ThemedText style={dynamicSmallButtonText}>{getCyclesDisplay()}</ThemedText>
-        </SettingButtonTrayning>
+          </ThemedView>
 
-      </ThemedView>
-
-      <TrainingModal
-        visible={isModalVisible}
-        onClose={closeModal}
-        onSave={handleSaveTraining}
-        training={training}
-        title="Modifica Allenamento"
-      />
+          <TrainingModal
+            visible={isModalVisible}
+            onClose={closeModal}
+            onSave={handleSaveTraining}
+            training={training}
+            title="Modifica Allenamento"
+          />
+      </> 
+      )}
     </ThemedView>
   );
 }

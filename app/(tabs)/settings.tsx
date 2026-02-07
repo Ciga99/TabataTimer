@@ -6,7 +6,7 @@ import { ThemedView } from '@/components/themed-view';
 import { LANGUAGES, useSettings } from '@/context/SettingsContext';
 import Slider from '@react-native-community/slider';
 import React, { useState } from 'react';
-import { StyleSheet, Switch, TouchableOpacity, useColorScheme } from 'react-native';
+import { ScrollView, StyleSheet, Switch, TouchableOpacity, useColorScheme } from 'react-native';
 
 export default function TabTwoScreen() {
   //Importo hooks del context
@@ -30,65 +30,67 @@ export default function TabTwoScreen() {
   //Sono come le variabili di stato di un compinente Angualr  
   return (
     <ThemedView style={styles.container}>
-      <ThemedView>
-        {/* Sezione Aspetto */}
-        <Card title="Aspetto">
-          <SettingRow label="Modalità Scura">
-            <Switch
-            // trackColor={{ false: '#767577', true: 'green' }}
-            // onValueChange={toggleTheme}
-            // value={theme === 'dark'}
-            />
-          </SettingRow>
-        </Card>
+      <ScrollView>
+        <ThemedView>
+          {/* Sezione Aspetto */}
+          <Card title="Aspetto">
+            <SettingRow label="Modalità Scura">
+              <Switch
+              // trackColor={{ false: '#767577', true: 'green' }}
+              // onValueChange={toggleTheme}
+              // value={theme === 'dark'}
+              />
+            </SettingRow>
+          </Card>
 
-        {/* Sezione Suoni */}
-        <Card title="Suoni">
-          <SettingRow label="Voci Abilitate">
-            <Switch
-              trackColor={{ false: '#767577', true: 'green' }}
-              value={voiceActive}
-              onValueChange={setVoiceActive}
-            />
-          </SettingRow>
-          {voiceActive && (
-            // blocco di codice condizionale deve avere sempre un solo "padre". <> ... </>. È come un contenitore invisibile che non sporca il layout.
-            <>
-              <SettingRow label="Lingua">
-                <TouchableOpacity
-                  onPress={() => setLanguagePickerVisible(true)}
-                  style={[styles.pickerButton, { borderColor: '#ffffff', borderWidth: 1 }]}>
-                  <ThemedText style={styles.pickerButtonText}>{language}</ThemedText>
-                </TouchableOpacity>
-                <PickerModal
-                  visible={languagePickerVisible}
-                  onClose={() => setLanguagePickerVisible(false)}
-                  options={LANGUAGES}
-                  selectedValue={language}
-                  onSelect={setLanguage}
-                  title="Seleziona Lingua"
-                />
-              </SettingRow>
-              <SettingRow label="Volume" slider={true}>
-                <ThemedView lightColor="transparent" darkColor="transparent">
-                  <Slider
-                    style={{ marginTop: 20 }}
-                    minimumValue={0}
-                    maximumValue={1}
-                    minimumTrackTintColor="#007AFF"
-                    // maximumTrackTintColor={theme === 'dark' ? '#555' : '#A9A9A9'}
-                    thumbTintColor="#007AFF"
-                    value={volume}
-                    onValueChange={setVolume}
-                    step={0.01}
+          {/* Sezione Suoni */}
+          <Card title="Suoni">
+            <SettingRow label="Voci Abilitate">
+              <Switch
+                trackColor={{ false: '#767577', true: 'green' }}
+                value={voiceActive}
+                onValueChange={setVoiceActive}
+              />
+            </SettingRow>
+            {voiceActive && (
+              // blocco di codice condizionale deve avere sempre un solo "padre". <> ... </>. È come un contenitore invisibile che non sporca il layout.
+              <>
+                <SettingRow label="Lingua">
+                  <TouchableOpacity
+                    onPress={() => setLanguagePickerVisible(true)}
+                    style={[styles.pickerButton, { borderColor: '#ffffff', borderWidth: 1 }]}>
+                    <ThemedText style={styles.pickerButtonText}>{language}</ThemedText>
+                  </TouchableOpacity>
+                  <PickerModal
+                    visible={languagePickerVisible}
+                    onClose={() => setLanguagePickerVisible(false)}
+                    options={LANGUAGES}
+                    selectedValue={language}
+                    onSelect={setLanguage}
+                    title="Seleziona Lingua"
                   />
-                </ThemedView>
-              </SettingRow>
-            </>
-          )}
-        </Card>
-        <ThemedText >Versione: 0.0.0</ThemedText>
-      </ThemedView>
+                </SettingRow>
+                <SettingRow label="Volume" slider={true}>
+                  <ThemedView lightColor="transparent" darkColor="transparent">
+                    <Slider
+                      style={{ marginTop: 20 }}
+                      minimumValue={0}
+                      maximumValue={1}
+                      minimumTrackTintColor="#007AFF"
+                      // maximumTrackTintColor={theme === 'dark' ? '#555' : '#A9A9A9'}
+                      thumbTintColor="#007AFF"
+                      value={volume}
+                      onValueChange={setVolume}
+                      step={0.01}
+                    />
+                  </ThemedView>
+                </SettingRow>
+              </>
+            )}
+          </Card>
+          <ThemedText >Versione: 0.0.0</ThemedText>
+        </ThemedView>
+      </ScrollView>
     </ThemedView>
   );
 }
