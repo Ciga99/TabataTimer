@@ -50,8 +50,11 @@ export default function TabTwoScreen() {
   const HEADER_HEIGHT = 60; // Altezza approssimativa dell'header
   const availableHeight = height - TAB_BAR_HEIGHT - HEADER_HEIGHT - 40; // lascia spazio per header, footer e margini
   const availableWidth = width - 16;
-  const buttonSize = Math.min(availableWidth, availableHeight, MAX_BUTTON_SIZE);
-  const smallButtonSize = Math.min((width / 3) - 16, MAX_SMALL_BUTTON_SIZE);
+  
+  // const buttonSize = height *0.5;
+  // const smallButtonSize = height *0.1;
+  // const buttonSize = Math.min(availableWidth, availableHeight, MAX_BUTTON_SIZE);
+  // const smallButtonSize = Math.min((width / 3) - 16, MAX_SMALL_BUTTON_SIZE);
 
   const openModal = () => {
     // Non aprire modal durante workout
@@ -128,11 +131,32 @@ export default function TabTwoScreen() {
     return `${workoutState.currentCycle}/${training.cycles}`;
   };
 
+  const getButtonSize = () => {
+    // 1. TABLET (o Landscape molto largo)
+    // Generalmente width > 600 indica un tablet in portrait o uno smartphone in landscape
+    if (width >= 768) {
+      return height * 0.3; // Su tablet non vogliamo il bottone gigante, 30% altezza basta
+    }
+    // 2. MOBILE STANDARD (iPhone 13, 14, Galaxy S23 ecc.)
+    // Altezza tipica sopra i 700dp
+    if (height >= 700) {
+      return height * 0.45; // Dimensione generosa per schermi lunghi
+    }
+    // 3. MOBILE PICCOLO (iPhone SE, vecchi modelli)
+    // Altezza sotto i 700dp
+    return height * 0.35;
+  };
+
+  const smallButtonSize = Math.min((width / 3) - 16, MAX_SMALL_BUTTON_SIZE);
+
   // Stili dinamici per dimensioni reattive
   const dynamicBigButton = {
-    width: buttonSize,
-    height: buttonSize,
-    borderRadius: buttonSize / 2,
+    // width: height * 0.4,
+    // height: height * 0.4,
+    // borderRadius: height * 0.5,
+    width: getButtonSize(),
+    height: getButtonSize(),
+    borderRadius: getButtonSize() * 0.5,
     backgroundColor: getPhaseColor(workoutState.phase, workoutState.isPaused),
   };
 
@@ -198,7 +222,9 @@ export default function TabTwoScreen() {
             >
               <ThemedText style={dynamicSmallButtonText}>{training.timePauseCycle}s</ThemedText>
             </SettingButtonTrayning>
+          </ThemedView>
 
+          <ThemedView style={styles.containerButton}>
             <SettingButtonTrayning
               style={[styles.smallButton, dynamicSmallButton, workoutState.isWorking && styles.disabledButton]}
               title="cycleRest"
@@ -244,7 +270,6 @@ const styles = StyleSheet.create({
     alignItems: 'center', // allinea in orizzontale
     // justifyContent: 'center', // allinea in verticale 
     flex: 1,
-    paddingBottom: 120, // Spazio per tab bar (70px) + margine (30px) + extra (20px)
   },
   totalTimeText: {
     fontSize: 18,
@@ -283,7 +308,6 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   containerButton: {
-
     flexDirection: 'row',
     justifyContent: 'center',
     flexWrap: 'wrap',
