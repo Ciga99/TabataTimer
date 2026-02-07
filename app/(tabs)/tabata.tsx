@@ -172,8 +172,8 @@ export default function TabTwoScreen() {
           )}
         </View>
       </TouchableOpacity>
-      {!isLandscape && (   
-        <>  
+      {/* {!isLandscape && (    */}
+        {/* // <>   */}
           <ThemedView style={styles.containerButton}>
             <SettingButtonTrayning
               style={[styles.smallButton, dynamicSmallButton, workoutState.isWorking && styles.disabledButton]}
@@ -232,8 +232,8 @@ export default function TabTwoScreen() {
             training={training}
             title="Modifica Allenamento"
           />
-      </> 
-      )}
+      {/* </>  */}
+      {/* )} */}
     </ThemedView>
   );
 }

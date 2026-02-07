@@ -1,13 +1,20 @@
 import { StyleSheet } from 'react-native';
+import { Colors } from '@/constants/theme';
 import { ThemedText } from "./themed-text";
 import { ThemedView } from "./themed-view";
 
-export const Card: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
-  <ThemedView  lightColor="#f8f8f8" darkColor="#1a1a1a" style={styles.container}>
-    <ThemedText  style={styles.title}>{title}</ThemedText>
-    {children}
-  </ThemedView>
-);
+export const Card: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => {
+  return (
+    <ThemedView
+      lightColor={Colors.light.card}
+      darkColor={Colors.dark.card}
+      style={styles.container}
+    >
+      <ThemedText style={styles.title}>{title}</ThemedText>
+      {children}
+    </ThemedView>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {

@@ -4,9 +4,10 @@ import { SettingRow } from '@/components/SettingRow';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { LANGUAGES, useSettings } from '@/context/SettingsContext';
+import { useTheme } from '@/context/ThemeContext';
 import Slider from '@react-native-community/slider';
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Switch, TouchableOpacity, useColorScheme } from 'react-native';
+import { ScrollView, StyleSheet, Switch, TouchableOpacity } from 'react-native';
 
 export default function TabTwoScreen() {
   //Importo hooks del context
@@ -22,7 +23,8 @@ export default function TabTwoScreen() {
   } = useSettings();
 
 
-  const colorScheme = useColorScheme();
+  // Tema
+  const { isDarkMode, setThemeMode } = useTheme();
 
   const [languagePickerVisible, setLanguagePickerVisible] = useState(false);
   const [speakerPickerVisible, setSpeakerPickerVisible] = useState(false);
@@ -36,9 +38,9 @@ export default function TabTwoScreen() {
           <Card title="Aspetto">
             <SettingRow label="Modalità Scura">
               <Switch
-              // trackColor={{ false: '#767577', true: 'green' }}
-              // onValueChange={toggleTheme}
-              // value={theme === 'dark'}
+                trackColor={{ false: '#767577', true: 'green' }}
+                onValueChange={(value) => setThemeMode(value ? 'dark' : 'light')}
+                value={isDarkMode}
               />
             </SettingRow>
           </Card>

@@ -1,5 +1,7 @@
 // components/tab-icon.tsx
 import { IconSymbol, } from '@/components/ui/icon-symbol';
+import { Colors } from '@/constants/theme';
+import { useTheme } from '@/context/ThemeContext';
 import { StyleSheet, View } from 'react-native';
 
 type TabIconProps = {
@@ -8,15 +10,25 @@ type TabIconProps = {
   focused: boolean; 
 };
 
+
 export function TabIcon({ name, color, focused }: TabIconProps) {
+  const { colorScheme } = useTheme();
   return (
     <View style={[focused ? styles.indicator : styles.focusedContainer]}>
-      <IconSymbol size={28} name={name} color={color} />
+      <IconSymbol size={28} name={name} color={
+        colorScheme === 'dark' ? ( focused ? Colors.dark.iconFocus : Colors.dark.icon) : ( focused ? Colors.light.iconFocus : Colors.light.icon)
+        } />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  dark: {
+    color: 'white',
+  },
+  light: {
+    color: 'black',
+  },
   container: {
     alignItems: 'center',
     justifyContent: 'center',

@@ -73,7 +73,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 10,
     marginHorizontal: 50,
-    elevation: 0,
     borderRadius: 50,
     height: 50,
     justifyContent: 'center',
