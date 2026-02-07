@@ -71,11 +71,12 @@ export default function TabLayout() {
 const styles = StyleSheet.create({
   tabBarStyle: {
     position: 'absolute',
-    bottom: 30,
+    bottom: 10,
     marginHorizontal: 50,
     elevation: 0,
     borderRadius: 50,
-    height: 70,
+    height: 50,
+    justifyContent: 'center',
     alignContent: 'center',
   },
   workingTabBarContainer: {
@@ -95,7 +96,7 @@ const styles = StyleSheet.create({
   },
   workingButtonText: {
     color: 'white',
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
   },
 });

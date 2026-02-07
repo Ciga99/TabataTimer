@@ -25,10 +25,10 @@ const styles = StyleSheet.create({
   indicator: {
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 4, // Spazio tra icona e indicatore
-    width: 50,       // Larghezza cerchio
-    height: 50,      // Altezza cerchio
-    borderRadius: 25, // Metà di width/height per farlo rotondo
+    // gap: 4, // Spazio tra icona e indicatore
+    width: 35,       // Larghezza cerchio
+    height: 35,      // Altezza cerchio
+    borderRadius: 50, // Metà di width/height per farlo rotondo
     backgroundColor: '#007AFF', // Blu
   },
   focusedContainer: {
