@@ -44,7 +44,9 @@ export default function TabTwoScreen() {
   const [timeRemaining, setTimeRemaining] = useState(0);
 
   // Calcola dimensioni reattive
-  const availableHeight = height - 0.6 * height; // lascia spazio per header/footer
+  const TAB_BAR_HEIGHT = 100; // 70px altezza + 30px margine
+  const HEADER_HEIGHT = 60; // Altezza approssimativa dell'header
+  const availableHeight = height - TAB_BAR_HEIGHT - HEADER_HEIGHT - 40; // lascia spazio per header, footer e margini
   const availableWidth = width - 16;
   const buttonSize = Math.min(availableWidth, availableHeight, MAX_BUTTON_SIZE);
   const smallButtonSize = Math.min((width / 3) - 16, MAX_SMALL_BUTTON_SIZE);
@@ -217,6 +219,7 @@ const styles = StyleSheet.create({
     alignItems: 'center', // allinea in orizzontale
     // justifyContent: 'center', // allinea in verticale 
     flex: 1,
+    paddingBottom: 120, // Spazio per tab bar (70px) + margine (30px) + extra (20px)
   },
   totalTimeText: {
     fontSize: 18,

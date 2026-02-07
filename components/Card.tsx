@@ -4,7 +4,7 @@ import { ThemedView } from "./themed-view";
 
 export const Card: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
   <ThemedView  lightColor="#f8f8f8" darkColor="#1a1a1a" style={styles.container}>
-    <ThemedText >{title}</ThemedText>
+    <ThemedText  style={styles.title}>{title}</ThemedText>
     {children}
   </ThemedView>
 );
@@ -15,4 +15,7 @@ const styles = StyleSheet.create({
     padding: 20, // Aggiungi padding per spaziare il contenuto dai bordi
     margin: 5,
   },
+  title: { 
+    margin: 5,
+  }
 });

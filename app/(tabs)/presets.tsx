@@ -83,7 +83,7 @@ export default function PresetsScreen() {
     _dragX: Animated.AnimatedInterpolation<number>,// posizione X del dito 
     item: Preset
   ) => {
-     // Animazione: il cestino parte piccolo (0.8) e diventa grande (1) mentre fai swipe
+    // Animazione: il cestino parte piccolo (0.8) e diventa grande (1) mentre fai swipe
     const scale = progress.interpolate({
       inputRange: [0, 1],
       outputRange: [0.8, 1],
@@ -136,18 +136,17 @@ export default function PresetsScreen() {
               <TouchableOpacity onPress={() => handleSelectPreset(item)}>
                 <Card title={item.title}>
                   <View style={styles.cardContent}>
+                    <TouchableOpacity
+                      style={styles.iconButton}
+                      onPress={() => openModalForEdit(item.id)}>
+                      <IconSymbol name="pencil" size={22} color="#565656" />
+                    </TouchableOpacity>
                     <View style={styles.infoContainer}>
                       <ThemedText style={styles.description}>{item.description}</ThemedText>
                       <ThemedText style={styles.details}>
                         Cicli: {item.cycles} - Serie: {item.serial} - tempo serie: {item.timeWork}s
                       </ThemedText>
                     </View>
-
-                    <TouchableOpacity
-                      style={styles.iconButton}
-                      onPress={() => openModalForEdit(item.id)}>
-                      <IconSymbol name="pencil" size={22} color="#565656" />
-                    </TouchableOpacity>
                   </View>
                 </Card>
               </TouchableOpacity>
@@ -179,7 +178,7 @@ const styles = StyleSheet.create({
   },
   listContent: {
     padding: 20,
-    paddingBottom: 100,
+    paddingBottom: 130, // Spazio extra per tab bar e FAB button
   },
   deleteAction: {
     backgroundColor: '#ff3b30',
