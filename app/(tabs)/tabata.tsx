@@ -45,17 +45,6 @@ export default function TabTwoScreen() {
   const { width, height } = useWindowDimensions();
   const [timeRemaining, setTimeRemaining] = useState(0);
 
-  // Calcola dimensioni reattive
-  const TAB_BAR_HEIGHT = 100; // 70px altezza + 30px margine
-  const HEADER_HEIGHT = 60; // Altezza approssimativa dell'header
-  const availableHeight = height - TAB_BAR_HEIGHT - HEADER_HEIGHT - 40; // lascia spazio per header, footer e margini
-  const availableWidth = width - 16;
-  
-  // const buttonSize = height *0.5;
-  // const smallButtonSize = height *0.1;
-  // const buttonSize = Math.min(availableWidth, availableHeight, MAX_BUTTON_SIZE);
-  // const smallButtonSize = Math.min((width / 3) - 16, MAX_SMALL_BUTTON_SIZE);
-
   const openModal = () => {
     // Non aprire modal durante workout
     if (!workoutState.isWorking) {
@@ -131,29 +120,49 @@ export default function TabTwoScreen() {
     return `${workoutState.currentCycle}/${training.cycles}`;
   };
 
+  // Calcola dimensioni reattive
+  const TAB_BAR_HEIGHT = 100; // 70px altezza + 30px margine
+  const HEADER_HEIGHT = 60; // Altezza approssimativa dell'header
+  const availableHeight = height - TAB_BAR_HEIGHT - HEADER_HEIGHT - 40; // lascia spazio per header, footer e margini
+  const availableWidth = width - 16;
+  
+  // const buttonSize = height *0.5;
+  // const smallButtonSize = height *0.1;
+  // const buttonSize = Math.min(availableWidth, availableHeight, MAX_BUTTON_SIZE);
+  // const smallButtonSize = Math.min((width / 3) - 16, MAX_SMALL_BUTTON_SIZE);
+
   const getButtonSize = () => {
     // 1. TABLET (o Landscape molto largo)
-    // Generalmente width > 600 indica un tablet in portrait o uno smartphone in landscape
     if (width >= 768) {
       return height * 0.3; // Su tablet non vogliamo il bottone gigante, 30% altezza basta
     }
     // 2. MOBILE STANDARD (iPhone 13, 14, Galaxy S23 ecc.)
-    // Altezza tipica sopra i 700dp
     if (height >= 700) {
       return height * 0.45; // Dimensione generosa per schermi lunghi
     }
     // 3. MOBILE PICCOLO (iPhone SE, vecchi modelli)
-    // Altezza sotto i 700dp
     return height * 0.35;
   };
 
-  const smallButtonSize = Math.min((width / 3) - 16, MAX_SMALL_BUTTON_SIZE);
+  const getSmallButtonSize = () => {
+    // 1. TABLET (o Landscape molto largo)
+    // Generalmente width > 600 indica un tablet in portrait o uno smartphone in landscape
+    if (width >= 768) {
+      return height * 0.2; // Su tablet non vogliamo il bottone gigante, 30% altezza basta
+    }
+    // 2. MOBILE STANDARD (iPhone 13, 14, Galaxy S23 ecc.)
+    // Altezza tipica sopra i 700dp
+    if (height >= 700) {
+      return height * 0.15; // Dimensione generosa per schermi lunghi
+    }
+    // 3. MOBILE PICCOLO (iPhone SE, vecchi modelli)
+    // Altezza sotto i 700dp
+    return height * 0.15 ;
+  };
+
 
   // Stili dinamici per dimensioni reattive
   const dynamicBigButton = {
-    // width: height * 0.4,
-    // height: height * 0.4,
-    // borderRadius: height * 0.5,
     width: getButtonSize(),
     height: getButtonSize(),
     borderRadius: getButtonSize() * 0.5,
@@ -161,12 +170,12 @@ export default function TabTwoScreen() {
   };
 
   const dynamicSmallButton = {
-    width: smallButtonSize,
-    height: smallButtonSize,
+    width: getSmallButtonSize(),
+    height: getSmallButtonSize(),
   };
 
   const dynamicSmallButtonText = {
-    fontSize: smallButtonSize * 0.25,
+    fontSize: getSmallButtonSize() * 0.25,
   };
 
   return (
