@@ -257,7 +257,6 @@ export default function TabTwoScreen() {
             >
               <ThemedText style={dynamicSmallButtonText}>{getCyclesDisplay()}</ThemedText>
             </SettingButtonTrayning>
-
           </ThemedView>
 
           <TrainingModal
