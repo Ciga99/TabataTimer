@@ -224,7 +224,7 @@ export default function TabTwoScreen() {
           <ThemedView style={styles.containerButton}>
             <SettingButtonTrayning
               style={[styles.smallButton, dynamicSmallButton, workoutState.isWorking && styles.disabledButton]}
-              title="workTime"
+              title="Work time"
               onPress={openModal}
             >
               <ThemedText style={dynamicSmallButtonText}>{training.timeWork}s</ThemedText>
@@ -232,7 +232,7 @@ export default function TabTwoScreen() {
 
             <SettingButtonTrayning
               style={[styles.smallButton, dynamicSmallButton, workoutState.isWorking && styles.disabledButton]}
-              title="restTime"
+              title="Rest time"
               onPress={openModal}
             >
               <ThemedText style={dynamicSmallButtonText}>{training.timePause}s</ThemedText>
@@ -240,7 +240,7 @@ export default function TabTwoScreen() {
 
             <SettingButtonTrayning
               style={[styles.smallButton, dynamicSmallButton, workoutState.isWorking && styles.disabledButton]}
-              title="seriesRest"
+              title="Series rest"
               onPress={openModal}
             >
               <ThemedText style={dynamicSmallButtonText}>{training.timePauseCycle}s</ThemedText>
@@ -248,7 +248,7 @@ export default function TabTwoScreen() {
 
             <SettingButtonTrayning
               style={[styles.smallButton, dynamicSmallButton, workoutState.isWorking && styles.disabledButton]}
-              title="cycleRest"
+              title="Cycle rest"
               onPress={openModal}
             >
               <ThemedText style={dynamicSmallButtonText}>{training.timePauseCycle}s</ThemedText>
@@ -256,7 +256,7 @@ export default function TabTwoScreen() {
 
             <SettingButtonTrayning
               style={[styles.smallButton, dynamicSmallButton, workoutState.isWorking && styles.progressButton]}
-              title="series"
+              title="Series"
               onPress={openModal}
             >
               <ThemedText style={dynamicSmallButtonText}>{getSeriesDisplay()}</ThemedText>
@@ -264,7 +264,7 @@ export default function TabTwoScreen() {
 
             <SettingButtonTrayning
               style={[styles.smallButton, dynamicSmallButton, workoutState.isWorking && styles.progressButton]}
-              title="cycles"
+              title="Cycles"
               onPress={openModal}
             >
               <ThemedText style={dynamicSmallButtonText}>{getCyclesDisplay()}</ThemedText>
