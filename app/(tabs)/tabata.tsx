@@ -125,20 +125,26 @@ export default function TabTwoScreen() {
     return `${workoutState.currentCycle}/${training.cycles}`;
   };
 
-  // Calcola dimensioni reattive
-  const TAB_BAR_HEIGHT = 100; // 70px altezza + 30px margine
-  const HEADER_HEIGHT = 60; // Altezza approssimativa dell'header
-  const availableHeight = height - TAB_BAR_HEIGHT - HEADER_HEIGHT - 40; // lascia spazio per header, footer e margini
-  const availableWidth = width - 16;
-  
-  // const buttonSize = height *0.5;
-  // const smallButtonSize = height *0.1;
-  // const buttonSize = Math.min(availableWidth, availableHeight, MAX_BUTTON_SIZE);
-  // const smallButtonSize = Math.min((width / 3) - 16, MAX_SMALL_BUTTON_SIZE);
+  // Calcolo di min(80, 8% della larghezza)
+  const dynamicPadding = Math.min(5, width * 0.08);
 
-  const getButtonSize = () => {
+  const getButtonSizeWidth = () => {
+    return Math.min(800, width * 0.9);
+    // // 1. TABLET (o Landscape molto largo)
+    // if (width >= 768) {
+    //   return width * 0.90; // Su tablet non vogliamo il bottone gigante, 30% altezza basta
+    // }
+    // // 2. MOBILE STANDARD (iPhone 13, 14, Galaxy S23 ecc.)
+    // if (width >= 700) {
+    //   return width * 0.45; // Dimensione generosa per schermi lunghi
+    // }
+    // // 3. MOBILE PICCOLO (iPhone SE, vecchi modelli)
+    // return width * 0.9;
+  };
+
+  const getButtonSizeHeight = () => {
     // 1. TABLET (o Landscape molto largo)
-    if (width >= 768) {
+    if (height >= 768) {
       return height * 0.3; // Su tablet non vogliamo il bottone gigante, 30% altezza basta
     }
     // 2. MOBILE STANDARD (iPhone 13, 14, Galaxy S23 ecc.)
@@ -166,9 +172,12 @@ export default function TabTwoScreen() {
   };
   // Stili dinamici per dimensioni reattive
   const dynamicBigButton = {
-    width: getButtonSize(),
-    height: getButtonSize(),
-    borderRadius: getButtonSize() * 0.5,
+    display: 'flex' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    width: getButtonSizeWidth(),
+    height: getButtonSizeHeight(),
+    borderRadius: 20,
     backgroundColor: getPhaseColor(workoutState.phase, workoutState.isPaused),
   };
 
@@ -177,18 +186,20 @@ export default function TabTwoScreen() {
     height: getSmallButtonSize(),
   };
 
+  const clamp = (value : number, min : number, max : number) => Math.min(Math.max(value, min), max);
+
   const dynamicSmallButtonText = {
-    fontSize: getSmallButtonSize() * 0.25,
+    fontSize: clamp((width * 0.07) + 16, 12, 24),
   };
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView style={[styles.container, { padding: dynamicPadding }] }>
       <ThemedText style={styles.totalTimeText}>
         Tempo totale: {formatTime(displayedTime)}
       </ThemedText>
 
       <TouchableOpacity
-        style={[styles.bigButton, dynamicBigButton]}
+        style={dynamicBigButton}
         onPress={handleBigButtonPress}
         activeOpacity={0.8}
       >
@@ -234,9 +245,7 @@ export default function TabTwoScreen() {
             >
               <ThemedText style={dynamicSmallButtonText}>{training.timePauseCycle}s</ThemedText>
             </SettingButtonTrayning>
-          </ThemedView>
 
-          <ThemedView style={styles.containerButton}>
             <SettingButtonTrayning
               style={[styles.smallButton, dynamicSmallButton, workoutState.isWorking && styles.disabledButton]}
               title="cycleRest"
@@ -278,25 +287,24 @@ export default function TabTwoScreen() {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'column',
-    alignItems: 'center', // allinea in orizzontale
-    // justifyContent: 'center', // allinea in verticale 
+    alignItems: 'center',  
     flex: 1,
   },
   totalTimeText: {
     fontSize: 18,
     marginBottom: 8,
   },
-  bigButton: {
-    margin: 8,
-    backgroundColor: '#007AFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-    elevation: 8,
-  },
+  // bigButton: {
+  //   margin: 8,
+  //   backgroundColor: '#007AFF',
+  //   justifyContent: 'center',
+  //   alignItems: 'center',
+  //   shadowColor: '#000',
+  //   shadowOffset: { width: 0, height: 4 },
+  //   shadowOpacity: 0.3,
+  //   shadowRadius: 5,
+  //   elevation: 8,
+  // },
   bigButtonContent: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -322,6 +330,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     flexWrap: 'wrap',
+    padding: 10,
   },
   smallButton: {
     margin: 8,
@@ -329,6 +338,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 20,
+    flexGrow: 1,           // Fa sì che il bottone occupi lo spazio rimanente
+    minWidth: 100,         // Se lo schermo è stretto, non scende sotto i 100px
+    maxWidth: '100%',
   },
   disabledButton: {
     opacity: 0.5,
