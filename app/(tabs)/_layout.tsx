@@ -1,6 +1,7 @@
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { TabIcon } from '@/components/ui/tabIcon';
 import { Colors } from '@/constants/theme';
+import { useAudio } from '@/context/AudioContext';
 import { useWorkout } from '@/context/WorkoutContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Tabs } from 'expo-router';
@@ -9,10 +10,16 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 function WorkingTabBar() {
   const { stopWorkout } = useWorkout();
+  const { playUserAction } = useAudio();
+
+  const handleStop = () => {
+    playUserAction('reset');
+    stopWorkout();
+  };
 
   return (
     <View style={styles.workingTabBarContainer}>
-      <TouchableOpacity style={styles.workingButton} activeOpacity={0.8} onPress={stopWorkout}>
+      <TouchableOpacity style={styles.workingButton} activeOpacity={0.8} onPress={handleStop}>
         <IconSymbol name="stop" size={24} color="white" />
         <Text style={styles.workingButtonText}>STOP</Text>
       </TouchableOpacity>

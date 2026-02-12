@@ -16,7 +16,7 @@ const defaultPresets: Preset[] = [
         timePause: 10,
         timePauseCycle: 10,
         timeTotal: 0,
-        voice: 'Alice',
+        voice: 'Donna',
         isVoiceEnabled: true,
     },
 ];
@@ -55,7 +55,14 @@ export const PresetsProvider: React.FC<{ children: ReactNode }> = ({ children })
         try {
             const savedPresets = await AsyncStorage.getItem(PRESETS_STORAGE_KEY);
             if (savedPresets !== null) {
-                setPresets(JSON.parse(savedPresets));
+                const parsed = JSON.parse(savedPresets);
+                // Migrazione: vecchi nomi speaker -> nuovi
+                const migrated = parsed.map((p: any) => {
+                    if (p.voice === 'Alice' || p.voice === 'Eva') return { ...p, voice: 'Donna' };
+                    if (p.voice === 'Bob' || p.voice === 'Negro') return { ...p, voice: 'Uomo' };
+                    return p;
+                });
+                setPresets(migrated);
             } else {
                 // Prima volta: usa i preset di default
                 setPresets(defaultPresets);

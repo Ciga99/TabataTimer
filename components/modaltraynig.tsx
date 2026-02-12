@@ -32,7 +32,7 @@ const defaultTraining: Training = {
   timePause: 30,
   timePauseCycle: 30,
   timeTotal: 0,
-  voice: 'Alice',
+  voice: 'Donna',
   isVoiceEnabled: true,
 };
 

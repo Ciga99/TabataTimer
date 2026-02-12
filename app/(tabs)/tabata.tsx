@@ -2,6 +2,7 @@ import { SettingButtonTrayning } from '@/components/homeComponents/smallbutton';
 import { TrainingModal } from '@/components/modaltraynig';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { useAudio } from '@/context/AudioContext';
 import { useTraining } from '@/context/TrainingContext';
 import { useWorkout, WorkoutPhase } from '@/context/WorkoutContext';
 import { Training } from '@/types/Training';
@@ -41,6 +42,7 @@ export default function TabTwoScreen() {
   const [orientation, setOrientation] = useState<ScreenOrientation.Orientation | null>(null);
   const { training, setTraining } = useTraining();
   const { workoutState, startWorkout, pauseWorkout, resumeWorkout } = useWorkout();
+  const { playUserAction } = useAudio();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { width, height } = useWindowDimensions();
   const [timeRemaining, setTimeRemaining] = useState(0);
@@ -58,16 +60,19 @@ export default function TabTwoScreen() {
     closeModal();
   };
 
-  // Handler per il bottone grande
+  // // Handler per il bottone grande
   const handleBigButtonPress = () => {
     if (!workoutState.isWorking) {
       // Non in esecuzione: AVVIA
+      playUserAction('start');
       startWorkout(training);
     } else if (workoutState.isPaused) {
       // In pausa: RIPRENDI
+      playUserAction('resume');
       resumeWorkout();
     } else {
       // In esecuzione: PAUSA
+      playUserAction('pause');
       pauseWorkout();
     }
   };
@@ -159,8 +164,6 @@ export default function TabTwoScreen() {
     // Altezza sotto i 700dp
     return height * 0.15 ;
   };
-
-
   // Stili dinamici per dimensioni reattive
   const dynamicBigButton = {
     width: getButtonSize(),

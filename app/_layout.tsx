@@ -7,6 +7,7 @@ import { PresetsProvider } from '@/context/PresetsContext';
 import { SettingsProvider } from '@/context/SettingsContext';
 import { ThemeProvider, useTheme } from '@/context/ThemeContext';
 import { TrainingProvider } from '@/context/TrainingContext';
+import { AudioProvider } from '@/context/AudioContext';
 import { WorkoutProvider } from '@/context/WorkoutContext';
 
 export const unstable_settings = {
@@ -34,9 +35,11 @@ export default function RootLayout() {
       <SettingsProvider>
         <TrainingProvider>
           <WorkoutProvider>
-            <PresetsProvider>
-              <AppContent />
-            </PresetsProvider>
+            <AudioProvider>
+              <PresetsProvider>
+                <AppContent />
+              </PresetsProvider>
+            </AudioProvider>
           </WorkoutProvider>
         </TrainingProvider>
       </SettingsProvider>

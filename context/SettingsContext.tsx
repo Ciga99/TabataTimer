@@ -2,10 +2,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 
 export type Languages = 'ITA' | 'ENG';
-export type Speakers = 'Alice' | 'Bob' | 'Random';
+export type Speakers = 'Donna' | 'Uomo' | 'Random';
 
 export const LANGUAGES: Languages[] = ['ITA', 'ENG'];
-export const SPEAKERS: Speakers[] = ['Alice', 'Bob', 'Random'];
+export const SPEAKERS: Speakers[] = ['Donna', 'Uomo', 'Random'];
 
 // 1. Definisci il tipo
 type SettingsContextType = {
@@ -26,7 +26,7 @@ const SettingsContext = createContext<SettingsContextType | undefined>(undefined
 export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [volume, setVolume] = useState(0.5);
   const [language, setLanguage] = useState<Languages>('ITA');
-  const [voice, setVoice] = useState<Speakers>('Alice');
+  const [voice, setVoice] = useState<Speakers>('Donna');
   const [voiceActive, setVoiceActive] = useState(true);
 
   // Carica le impostazioni salvate all'avvio Caricamento iniziale (useEffect)
@@ -49,7 +49,12 @@ export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }
 
       if (savedVolume !== null) setVolume(parseFloat(savedVolume));
       if (savedLanguage !== null) setLanguage(savedLanguage as Languages);
-      if (savedVoice !== null) setVoice(savedVoice as Speakers);
+      if (savedVoice !== null) {
+        // Migrazione: vecchi nomi speaker -> nuovi
+        if (savedVoice === 'Alice' || savedVoice === 'Eva') setVoice('Donna');
+        else if (savedVoice === 'Bob' || savedVoice === 'Negro') setVoice('Uomo');
+        else setVoice(savedVoice as Speakers);
+      }
       if (savedVoiceActive !== null) setVoiceActive(savedVoiceActive === 'true');
     } catch (error) {
       console.error('Errore nel caricamento delle impostazioni:', error);

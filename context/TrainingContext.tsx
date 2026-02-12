@@ -20,7 +20,7 @@ export const TrainingProvider: React.FC<{ children: ReactNode }> = ({ children }
             timePause: 30,
             timePauseCycle: 30,
             timeTotal: 0,
-            voice: 'Alice',
+            voice: 'Donna',
             isVoiceEnabled: true,
         });
 
@@ -43,7 +43,11 @@ export const TrainingProvider: React.FC<{ children: ReactNode }> = ({ children }
     try {
       const savedTraining = await AsyncStorage.getItem('training');
       if (savedTraining !== null) {
-        setTraining(JSON.parse(savedTraining));
+        const parsed = JSON.parse(savedTraining);
+        // Migrazione: vecchi nomi speaker -> nuovi
+        if (parsed.voice === 'Alice' || parsed.voice === 'Eva') parsed.voice = 'Donna';
+        else if (parsed.voice === 'Bob' || parsed.voice === 'Negro') parsed.voice = 'Uomo';
+        setTraining(parsed);
       }
     } catch (error) {
       console.error('Errore nel caricamento delle impostazioni:', error);
