@@ -126,7 +126,7 @@ export default function TabTwoScreen() {
   };
 
   // Calcolo di min(80, 8% della larghezza)
-  const dynamicPadding = Math.min(5, width * 0.08);
+  const dynamicPadding = Math.min(10, width * 0.08);
 
   const getButtonSizeWidth = () => {
     return Math.min(800, width * 0.9);
@@ -149,7 +149,7 @@ export default function TabTwoScreen() {
     }
     // 2. MOBILE STANDARD (iPhone 13, 14, Galaxy S23 ecc.)
     if (height >= 700) {
-      return height * 0.45; // Dimensione generosa per schermi lunghi
+      return height * 0.40; // Dimensione generosa per schermi lunghi
     }
     // 3. MOBILE PICCOLO (iPhone SE, vecchi modelli)
     return height * 0.35;
@@ -164,11 +164,11 @@ export default function TabTwoScreen() {
     // 2. MOBILE STANDARD (iPhone 13, 14, Galaxy S23 ecc.)
     // Altezza tipica sopra i 700dp
     if (height >= 700) {
-      return height * 0.15; // Dimensione generosa per schermi lunghi
+      return height * 0.09; // Dimensione generosa per schermi lunghi
     }
     // 3. MOBILE PICCOLO (iPhone SE, vecchi modelli)
     // Altezza sotto i 700dp
-    return height * 0.15 ;
+    return height * 0.10 ;
   };
   // Stili dinamici per dimensioni reattive
   const dynamicBigButton = {
@@ -193,7 +193,7 @@ export default function TabTwoScreen() {
   };
 
   return (
-    <ThemedView style={[styles.container, { padding: dynamicPadding }] }>
+    <ThemedView style={[styles.container, { paddingBottom: dynamicPadding }] }>
       <ThemedText style={styles.totalTimeText}>
         Tempo totale: {formatTime(displayedTime)}
       </ThemedText>
