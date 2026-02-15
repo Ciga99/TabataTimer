@@ -1,3 +1,5 @@
+import { Colors } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useState } from 'react';
 import {
   Modal,
@@ -26,6 +28,8 @@ export function TimeStepper({
   max = 3599,
   isDark,
 }: TimeStepperProps) {
+  const colorScheme = useColorScheme();
+  const themeColors = Colors[colorScheme ?? 'light'];
   const [showModal, setShowModal] = useState(false);
   const [inputMinutes, setInputMinutes] = useState('');
   const [inputSeconds, setInputSeconds] = useState('');
@@ -61,11 +65,11 @@ export function TimeStepper({
     setShowModal(false);
   };
 
-  const btnBg = isDark ? '#555' : '#ddd';
-  const btnColor = isDark ? 'white' : 'black';
-  const inputBg = isDark ? '#3a3a3c' : '#f2f2f7';
-  const inputColor = isDark ? 'white' : 'black';
-  const inputBorder = isDark ? '#555' : '#ddd';
+  const btnBg = themeColors.secondary;
+  const btnColor = themeColors.text;
+  const inputBg = themeColors.inputBackground;
+  const inputColor = themeColors.text;
+  const inputBorder = themeColors.inputBorder;
 
   return (
     <View style={styles.container}>
@@ -97,8 +101,8 @@ export function TimeStepper({
         >
           <ThemedView
             style={styles.modalContent}
-            lightColor="#fff"
-            darkColor="#2c2c2e"
+            lightColor={Colors.light.modalBackground}
+            darkColor={Colors.dark.modalBackground}
           >
             <TouchableOpacity activeOpacity={1}>
               <ThemedText style={styles.modalTitle}>Inserisci tempo</ThemedText>
@@ -113,7 +117,7 @@ export function TimeStepper({
                     keyboardType="numeric"
                     maxLength={2}
                     placeholder="0"
-                    placeholderTextColor={isDark ? '#888' : '#999'}
+                    placeholderTextColor={themeColors.placeholder}
                     selectTextOnFocus
                   />
                 </View>
@@ -129,7 +133,7 @@ export function TimeStepper({
                     keyboardType="numeric"
                     maxLength={2}
                     placeholder="0"
-                    placeholderTextColor={isDark ? '#888' : '#999'}
+                    placeholderTextColor={themeColors.placeholder}
                     selectTextOnFocus
                   />
                 </View>
@@ -137,16 +141,16 @@ export function TimeStepper({
 
               <View style={styles.buttonRow}>
                 <TouchableOpacity
-                  style={[styles.modalButton, styles.cancelButton]}
+                  style={[styles.modalButton, { backgroundColor: themeColors.destructive }]}
                   onPress={() => setShowModal(false)}
                 >
                   <ThemedText style={styles.buttonText}>Annulla</ThemedText>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={[styles.modalButton, styles.confirmButton]}
+                  style={[styles.modalButton, { backgroundColor: themeColors.primary }]}
                   onPress={handleConfirm}
                 >
-                  <ThemedText style={styles.buttonText}>Conferma</ThemedText>
+                  <ThemedText style={[styles.buttonText, { color: themeColors.textOnPrimary }]}>Conferma</ThemedText>
                 </TouchableOpacity>
               </View>
             </TouchableOpacity>
@@ -240,12 +244,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',
-  },
-  cancelButton: {
-    backgroundColor: '#ff3b30',
-  },
-  confirmButton: {
-    backgroundColor: '#007AFF',
   },
   buttonText: {
     color: 'white',

@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
   link: {
     lineHeight: 30,
     fontSize: 16,
-    color: '#0a7ea4',
+    color: '#00A896',
     fontFamily: 'Inter_400Regular',
   },
 });

@@ -1,3 +1,4 @@
+import { Colors } from "@/constants/theme";
 import { SPEAKERS } from "@/context/SettingsContext";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { Training } from "@/types/Training";
@@ -49,6 +50,7 @@ export function TrainingModal({
 }: TrainingModalProps) {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
+  const themeColors = Colors[colorScheme ?? 'light'];
   const { width, height } = useWindowDimensions();
 
   // Form state
@@ -112,9 +114,9 @@ export function TrainingModal({
   const inputStyle = [
     styles.input,
     {
-      backgroundColor: isDark ? "#3a3a3c" : "#f2f2f7",
-      color: isDark ? "white" : "black",
-      borderColor: isDark ? "#555" : "#ddd",
+      backgroundColor: themeColors.inputBackground,
+      color: themeColors.text,
+      borderColor: themeColors.inputBorder,
     },
   ];
 
@@ -130,8 +132,8 @@ export function TrainingModal({
             styles.modalContent,
             { width: width * 0.9, maxHeight: height * 0.85 },
           ]}
-          lightColor="#fff"
-          darkColor="#2c2c2e"
+          lightColor={Colors.light.modalBackground}
+          darkColor={Colors.dark.modalBackground}
         >
           <TouchableOpacity activeOpacity={1} style={{ flex: 1 }}>
             <ScrollView showsVerticalScrollIndicator={false}>
@@ -146,7 +148,7 @@ export function TrainingModal({
                     value={formData.title}
                     onChangeText={(text) => updateField("title", text)}
                     placeholder="Nome allenamento"
-                    placeholderTextColor={isDark ? "#888" : "#999"}
+                    placeholderTextColor={themeColors.placeholder}
                   />
 
                   {/* Descrizione */}
@@ -156,7 +158,7 @@ export function TrainingModal({
                     value={formData.description}
                     onChangeText={(text) => updateField("description", text)}
                     placeholder="Descrizione opzionale"
-                    placeholderTextColor={isDark ? "#888" : "#999"}
+                    placeholderTextColor={themeColors.placeholder}
                     multiline
                     numberOfLines={3}
                   />
@@ -173,7 +175,7 @@ export function TrainingModal({
                 }
                 keyboardType="numeric"
                 placeholder="8"
-                placeholderTextColor={isDark ? "#888" : "#999"}
+                placeholderTextColor={themeColors.placeholder}
               />
 
               {/* Numero di cicli */}
@@ -186,7 +188,7 @@ export function TrainingModal({
                 }
                 keyboardType="numeric"
                 placeholder="1"
-                placeholderTextColor={isDark ? "#888" : "#999"}
+                placeholderTextColor={themeColors.placeholder}
               />
 
               {/* Tempo lavoro */}
@@ -220,7 +222,7 @@ export function TrainingModal({
                   onValueChange={(value) =>
                     updateField("isVoiceEnabled", value)
                   }
-                  trackColor={{ false: "#767577", true: "#007AFF" }}
+                  trackColor={{ false: "#767577", true: themeColors.primary }}
                   thumbColor={formData.isVoiceEnabled ? "#fff" : "#f4f3f4"}
                 />
               </View>
@@ -250,18 +252,18 @@ export function TrainingModal({
               {/* Pulsanti azione */}
               <View style={styles.buttonRow}>
                 <TouchableOpacity
-                  style={[styles.button, styles.cancelButton]}
+                  style={[styles.button, { backgroundColor: themeColors.destructive }]}
                   onPress={onClose}
                 >
-                  <ThemedText style={styles.cancelButtonText}>
+                  <ThemedText style={styles.buttonText}>
                     Annulla
                   </ThemedText>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={[styles.button, styles.saveButton]}
+                  style={[styles.button, { backgroundColor: themeColors.primary }]}
                   onPress={handleSave}
                 >
-                  <ThemedText style={styles.saveButtonText}>Salva</ThemedText>
+                  <ThemedText style={[styles.buttonText, { color: themeColors.textOnPrimary }]}>Salva</ThemedText>
                 </TouchableOpacity>
               </View>
             </ScrollView>
@@ -336,7 +338,7 @@ const styles = StyleSheet.create({
   totalTimeValue: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#007AFF",
+    color: "#00A896",
   },
   buttonRow: {
     flexDirection: "row",
@@ -350,17 +352,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: "center",
   },
-  cancelButton: {
-    backgroundColor: "#ff3b30",
-  },
-  cancelButtonText: {
-    color: "white",
-    fontWeight: "600",
-  },
-  saveButton: {
-    backgroundColor: "#007AFF",
-  },
-  saveButtonText: {
+  buttonText: {
     color: "white",
     fontWeight: "600",
   },

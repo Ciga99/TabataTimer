@@ -5,6 +5,7 @@ import { ThemedView } from "@/components/themed-view";
 import { useAudio } from "@/context/AudioContext";
 import { useTraining } from "@/context/TrainingContext";
 import { useWorkout, WorkoutPhase } from "@/context/WorkoutContext";
+import { Colors } from "@/constants/theme";
 import { Training } from "@/types/Training";
 import * as ScreenOrientation from "expo-screen-orientation";
 import { useEffect, useState } from "react";
@@ -14,6 +15,7 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 import { formatTime } from "../helper";
 
 const MAX_BUTTON_SIZE = 500;
@@ -36,20 +38,20 @@ const getPhaseLabel = (phase: WorkoutPhase, isPaused: boolean): string => {
   }
 };
 
-// Helper per il colore della fase
-const getPhaseColor = (phase: WorkoutPhase, isPaused: boolean): string => {
-  if (isPaused) return "#9E9E9E"; // Grigio quando in pausa
+// Helper per il colore della fase (theme-aware)
+const getPhaseColor = (phase: WorkoutPhase, isPaused: boolean, primary: string): string => {
+  if (isPaused) return "#9E9E9E";
   switch (phase) {
     case "work":
-      return "#4CAF50"; // Verde
+      return "#4CAF50";
     case "rest":
-      return "#FF9800"; // Arancione
+      return "#FF9800";
     case "cycle_rest":
-      return "#f0f321"; // Blu
+      return "#f0f321";
     case "finished":
-      return "#3027b0"; // Viola
+      return "#3027b0";
     default:
-      return "#007AFF"; // Blu default
+      return primary;
   }
 };
 
@@ -60,6 +62,8 @@ export default function TabTwoScreen() {
   const { workoutState, startWorkout, pauseWorkout, resumeWorkout } =
     useWorkout();
   const { playUserAction } = useAudio();
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme ?? 'light'];
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { width, height } = useWindowDimensions();
   const [timeRemaining, setTimeRemaining] = useState(0);
@@ -199,7 +203,7 @@ export default function TabTwoScreen() {
     width: getButtonSizeWidth(),
     height: getButtonSizeHeight(),
     borderRadius: 20,
-    backgroundColor: getPhaseColor(workoutState.phase, workoutState.isPaused),
+    backgroundColor: getPhaseColor(workoutState.phase, workoutState.isPaused, colors.primary),
   };
 
   const dynamicSmallButton = {
@@ -248,12 +252,13 @@ export default function TabTwoScreen() {
           style={[
             styles.smallButton,
             dynamicSmallButton,
+            { backgroundColor: colors.secondary },
             workoutState.isWorking && styles.disabledButton,
           ]}
           title="Work time"
           onPress={openModal}
         >
-          <ThemedText style={dynamicSmallButtonText}>
+          <ThemedText style={[dynamicSmallButtonText, { color: colors.text }]}>
             {training.timeWork}s
           </ThemedText>
         </SettingButtonTrayning>
@@ -262,12 +267,13 @@ export default function TabTwoScreen() {
           style={[
             styles.smallButton,
             dynamicSmallButton,
+            { backgroundColor: colors.secondary },
             workoutState.isWorking && styles.disabledButton,
           ]}
           title="Rest time"
           onPress={openModal}
         >
-          <ThemedText style={dynamicSmallButtonText}>
+          <ThemedText style={[dynamicSmallButtonText, { color: colors.text }]}>
             {training.timePause}s
           </ThemedText>
         </SettingButtonTrayning>
@@ -276,12 +282,13 @@ export default function TabTwoScreen() {
           style={[
             styles.smallButton,
             dynamicSmallButton,
+            { backgroundColor: colors.secondary },
             workoutState.isWorking && styles.disabledButton,
           ]}
           title="Series rest"
           onPress={openModal}
         >
-          <ThemedText style={dynamicSmallButtonText}>
+          <ThemedText style={[dynamicSmallButtonText, { color: colors.text }]}>
             {training.timePauseCycle}s
           </ThemedText>
         </SettingButtonTrayning>
@@ -290,12 +297,13 @@ export default function TabTwoScreen() {
           style={[
             styles.smallButton,
             dynamicSmallButton,
+            { backgroundColor: colors.secondary },
             workoutState.isWorking && styles.disabledButton,
           ]}
           title="Cycle rest"
           onPress={openModal}
         >
-          <ThemedText style={dynamicSmallButtonText}>
+          <ThemedText style={[dynamicSmallButtonText, { color: colors.text }]}>
             {training.timePauseCycle}s
           </ThemedText>
         </SettingButtonTrayning>
@@ -304,12 +312,13 @@ export default function TabTwoScreen() {
           style={[
             styles.smallButton,
             dynamicSmallButton,
+            { backgroundColor: colors.primary },
             workoutState.isWorking && styles.progressButton,
           ]}
           title="Series"
           onPress={openModal}
         >
-          <ThemedText style={dynamicSmallButtonText}>
+          <ThemedText style={[dynamicSmallButtonText, { color: colors.textOnPrimary }]}>
             {getSeriesDisplay()}
           </ThemedText>
         </SettingButtonTrayning>
@@ -318,12 +327,13 @@ export default function TabTwoScreen() {
           style={[
             styles.smallButton,
             dynamicSmallButton,
+            { backgroundColor: colors.primary },
             workoutState.isWorking && styles.progressButton,
           ]}
           title="Cycles"
           onPress={openModal}
         >
-          <ThemedText style={dynamicSmallButtonText}>
+          <ThemedText style={[dynamicSmallButtonText, { color: colors.textOnPrimary }]}>
             {getCyclesDisplay()}
           </ThemedText>
         </SettingButtonTrayning>
@@ -394,7 +404,6 @@ const styles = StyleSheet.create({
   },
   smallButton: {
     margin: 8,
-    backgroundColor: "#4aa2ff",
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 20,
@@ -406,6 +415,6 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   progressButton: {
-    backgroundColor: "#4CAF50",
+    opacity: 0.8,
   },
 });

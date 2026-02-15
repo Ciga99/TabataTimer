@@ -49,7 +49,7 @@ export default function TabLayout() {
         headerTintColor: Colors[colorScheme ?? 'light'].text,
         headerShadowVisible: false,
         tabBarShowLabel: false,
-        tabBarStyle: isWorking ? { display: 'none' } : styles.tabBarStyle,
+        tabBarStyle: isWorking ? { display: 'none' } : [styles.tabBarStyle, { backgroundColor: Colors[colorScheme ?? 'light'].card }],
       }}
       tabBar={isWorking ? () => <WorkingTabBar /> : undefined}
     >
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     right: 0,
   },
   workingButton: {
-    backgroundColor: '#E53935',
+    backgroundColor: '#ff3b30',
     borderRadius: 50,
     height: 70,
     flexDirection: 'row',

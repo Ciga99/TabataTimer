@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
     paddingBottom: 130, // Spazio extra per tab bar e FAB button
   },
   deleteAction: {
-    backgroundColor: '#ff3b30',
+    backgroundColor: '#ff453a',
     justifyContent: 'center',
     alignItems: 'center',
     width: 80,
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     bottom: 120,
     right: 20,
-    backgroundColor: '#007AFF',
+    backgroundColor: '#00A896',
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',

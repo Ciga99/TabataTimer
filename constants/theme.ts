@@ -5,39 +5,68 @@
 
 import { Platform } from 'react-native';
 
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#e7e6e6';
-
 export const Colors = {
   light: {
-    text: '#11181C',
-    background: '#e4e4e4',
-    tint: tintColorLight,
-    icon: '#1f1f1f',
-    iconFocus: '#ffffff',
-    tabIconDefault: '#687076',
-    tabIconSelected: tintColorLight,
-    // Colori aggiuntivi
-    card: '#f8f8f8',
-    cardText: '#11181C',
-    border: '#E0E0E0',
-    buttonPrimary: '#007AFF',
-    buttonSecondary: '#4aa2ff',
+    // Sfondi
+    background: '#F7F9F9',
+    card: '#FFFFFF',
+    // Testo
+    text: '#0E1B20',
+    textSecondary: '#546E7A',
+    textOnPrimary: '#FFFFFF',
+    // Accenti
+    primary: '#00A896',
+    secondary: '#E0F2F1',
+    // Tab bar
+    tint: '#00A896',
+    icon: '#546E7A',
+    iconFocus: '#FFFFFF',
+    tabIconDefault: '#546E7A',
+    tabIconSelected: '#00A896',
+    // UI
+    cardText: '#0E1B20',
+    border: '#E0F2F1',
+    buttonPrimary: '#00A896',
+    buttonSecondary: '#E0F2F1',
+    // Input
+    inputBackground: '#F7F9F9',
+    inputBorder: '#E0F2F1',
+    placeholder: '#546E7A',
+    // Distruttivo
+    destructive: '#ff3b30',
+    // Modal
+    modalBackground: '#FFFFFF',
   },
   dark: {
-    text: '#ECEDEE',
-    background: '#151718',
-    tint: tintColorDark,
-    icon: '#9BA1A6',
-     iconFocus: '#ffffff',
-    tabIconDefault: '#9BA1A6',
-    tabIconSelected: tintColorDark,
-    // Colori aggiuntivi
-    card: '#1a1a1a',
-    cardText: '#ECEDEE',
-    border: '#333333',
-    buttonPrimary: '#0A84FF',
-    buttonSecondary: '#5ac8fa',
+    // Sfondi
+    background: '#192229',
+    card: '#212B36',
+    // Testo
+    text: '#E6EBEF',
+    textSecondary: '#9BAFB8',
+    textOnPrimary: '#192229',
+    // Accenti
+    primary: '#2EE6CA',
+    secondary: '#2A3F44',
+    // Tab bar
+    tint: '#2EE6CA',
+    icon: '#9BAFB8',
+    iconFocus: '#FFFFFF',
+    tabIconDefault: '#9BAFB8',
+    tabIconSelected: '#2EE6CA',
+    // UI
+    cardText: '#E6EBEF',
+    border: '#2A3F44',
+    buttonPrimary: '#2EE6CA',
+    buttonSecondary: '#2A3F44',
+    // Input
+    inputBackground: '#2A3F44',
+    inputBorder: '#3A5058',
+    placeholder: '#9BAFB8',
+    // Distruttivo
+    destructive: '#ff453a',
+    // Modal
+    modalBackground: '#212B36',
   },
 };
 

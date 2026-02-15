@@ -1,4 +1,5 @@
 // components/picker-modal.tsx
+import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { FlatList, Modal, StyleSheet, TouchableOpacity } from 'react-native';
 import { ThemedText } from './themed-text';
@@ -22,23 +23,23 @@ export function PickerModal<T extends string>({
   title,
 }: PickerModalProps<T>) {
   const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const themeColors = Colors[colorScheme ?? 'light'];
 
   return (
     <Modal transparent={true} visible={visible} animationType="fade">
-      <TouchableOpacity 
-        style={styles.modalOverlay} 
+      <TouchableOpacity
+        style={styles.modalOverlay}
         activeOpacity={1}
         onPress={onClose}>
-        <ThemedView 
-          style={styles.modalContent} 
-          lightColor="#fff" 
-          darkColor="#2c2c2e">
-          
+        <ThemedView
+          style={styles.modalContent}
+          lightColor={Colors.light.modalBackground}
+          darkColor={Colors.dark.modalBackground}>
+
           {title && (
             <ThemedText style={styles.modalTitle}>{title}</ThemedText>
           )}
-          
+
           <FlatList
             data={options}
             keyExtractor={(item) => item}
@@ -46,7 +47,7 @@ export function PickerModal<T extends string>({
               <TouchableOpacity
                 style={[
                   styles.modalItem,
-                  { borderBottomColor: isDark ? '#444' : '#eee' },
+                  { borderBottomColor: themeColors.border },
                 ]}
                 onPress={() => {
                   onSelect(item);
@@ -55,10 +56,10 @@ export function PickerModal<T extends string>({
                 <ThemedText
                   style={[
                     styles.modalItemText,
-                    { 
-                      color: selectedValue === item 
-                        ? '#007AFF' 
-                        : isDark ? 'white' : 'black' 
+                    {
+                      color: selectedValue === item
+                        ? themeColors.primary
+                        : themeColors.text
                     },
                   ]}>
                   {item}

@@ -13,11 +13,10 @@ type TabIconProps = {
 
 export function TabIcon({ name, color, focused }: TabIconProps) {
   const { colorScheme } = useTheme();
+  const colors = Colors[colorScheme ?? 'light'];
   return (
-    <View style={[focused ? styles.indicator : styles.focusedContainer]}>
-      <IconSymbol size={28} name={name} color={
-        colorScheme === 'dark' ? ( focused ? Colors.dark.iconFocus : Colors.dark.icon) : ( focused ? Colors.light.iconFocus : Colors.light.icon)
-        } />
+    <View style={[focused ? [styles.indicator, { backgroundColor: colors.primary }] : styles.focusedContainer]}>
+      <IconSymbol size={28} name={name} color={focused ? colors.iconFocus : colors.icon} />
     </View>
   );
 }
@@ -41,7 +40,7 @@ const styles = StyleSheet.create({
     width: 35,       // Larghezza cerchio
     height: 35,      // Altezza cerchio
     borderRadius: 50, // Metà di width/height per farlo rotondo
-    backgroundColor: '#007AFF', // Blu
+    // backgroundColor viene applicato inline dal componente
   },
   focusedContainer: {
     width: 50,       // Larghezza cerchio

@@ -3,8 +3,10 @@ import { PickerModal } from '@/components/modalSpeker';
 import { SettingRow } from '@/components/SettingRow';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { Colors } from '@/constants/theme';
 import { LANGUAGES, useSettings } from '@/context/SettingsContext';
 import { useTheme } from '@/context/ThemeContext';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import Slider from '@react-native-community/slider';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Switch, TouchableOpacity } from 'react-native';
@@ -25,6 +27,8 @@ export default function TabTwoScreen() {
 
   // Tema
   const { isDarkMode, setThemeMode } = useTheme();
+  const colorScheme = useColorScheme();
+  const themeColors = Colors[colorScheme ?? 'light'];
 
   const [languagePickerVisible, setLanguagePickerVisible] = useState(false);
   const [speakerPickerVisible, setSpeakerPickerVisible] = useState(false);
@@ -38,7 +42,7 @@ export default function TabTwoScreen() {
           <Card title="Aspetto">
             <SettingRow label="Modalità Scura">
               <Switch
-                trackColor={{ false: '#767577', true: 'green' }}
+                trackColor={{ false: '#767577', true: themeColors.primary }}
                 onValueChange={(value) => setThemeMode(value ? 'dark' : 'light')}
                 value={isDarkMode}
               />
@@ -49,7 +53,7 @@ export default function TabTwoScreen() {
           <Card title="Suoni">
             <SettingRow label="Voci Abilitate">
               <Switch
-                trackColor={{ false: '#767577', true: 'green' }}
+                trackColor={{ false: '#767577', true: themeColors.primary }}
                 value={voiceActive}
                 onValueChange={setVoiceActive}
               />
@@ -60,7 +64,7 @@ export default function TabTwoScreen() {
                 <SettingRow label="Lingua">
                   <TouchableOpacity
                     onPress={() => setLanguagePickerVisible(true)}
-                    style={[styles.pickerButton, { borderColor: '#ffffff', borderWidth: 1 }]}>
+                    style={[styles.pickerButton, { borderColor: themeColors.border, borderWidth: 1 }]}>
                     <ThemedText style={styles.pickerButtonText}>{language}</ThemedText>
                   </TouchableOpacity>
                   <PickerModal
@@ -78,9 +82,8 @@ export default function TabTwoScreen() {
                       style={{ marginTop: 20 }}
                       minimumValue={0}
                       maximumValue={1}
-                      minimumTrackTintColor="#007AFF"
-                      // maximumTrackTintColor={theme === 'dark' ? '#555' : '#A9A9A9'}
-                      thumbTintColor="#007AFF"
+                      minimumTrackTintColor={themeColors.primary}
+                      thumbTintColor={themeColors.primary}
                       value={volume}
                       onValueChange={setVolume}
                       step={0.01}
