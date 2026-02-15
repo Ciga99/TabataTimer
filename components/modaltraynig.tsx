@@ -15,6 +15,7 @@ import {
 import { PickerModal } from './modalSpeker';
 import { ThemedText } from './themed-text';
 import { ThemedView } from './themed-view';
+import { TimeStepper } from './TimeStepper';
 
 type TrainingModalProps = {
   visible: boolean;
@@ -161,37 +162,28 @@ export function TrainingModal({
                 placeholderTextColor={isDark ? '#888' : '#999'}
               />
 
-              {/* Tempo lavoro (secondi) */}
-              <ThemedText style={styles.label}>Tempo lavoro (secondi)</ThemedText>
-              <TextInput
-                style={inputStyle}
-                value={formData.timeWork.toString()}
-                onChangeText={(text) => updateField('timeWork', parseInt(text) || 0)}
-                keyboardType="numeric"
-                placeholder="30"
-                placeholderTextColor={isDark ? '#888' : '#999'}
+              {/* Tempo lavoro */}
+              <ThemedText style={styles.label}>Tempo lavoro</ThemedText>
+              <TimeStepper
+                value={formData.timeWork}
+                onChange={(v) => updateField('timeWork', v)}
+                isDark={isDark}
               />
 
-              {/* Tempo pausa (secondi) */}
-              <ThemedText style={styles.label}>Tempo pausa (secondi)</ThemedText>
-              <TextInput
-                style={inputStyle}
-                value={formData.timePause.toString()}
-                onChangeText={(text) => updateField('timePause', parseInt(text) || 0)}
-                keyboardType="numeric"
-                placeholder="30"
-                placeholderTextColor={isDark ? '#888' : '#999'}
+              {/* Tempo pausa */}
+              <ThemedText style={styles.label}>Tempo pausa</ThemedText>
+              <TimeStepper
+                value={formData.timePause}
+                onChange={(v) => updateField('timePause', v)}
+                isDark={isDark}
               />
 
-              {/* Tempo pausa ciclo (secondi) */}
-              <ThemedText style={styles.label}>Tempo pausa ciclo (secondi)</ThemedText>
-              <TextInput
-                style={inputStyle}
-                value={formData.timePauseCycle.toString()}
-                onChangeText={(text) => updateField('timePauseCycle', parseInt(text) || 0)}
-                keyboardType="numeric"
-                placeholder="30"
-                placeholderTextColor={isDark ? '#888' : '#999'}
+              {/* Tempo pausa ciclo */}
+              <ThemedText style={styles.label}>Tempo pausa ciclo</ThemedText>
+              <TimeStepper
+                value={formData.timePauseCycle}
+                onChange={(v) => updateField('timePauseCycle', v)}
+                isDark={isDark}
               />
               {/* Voce attiva */}
               <View style={styles.switchRow}>
