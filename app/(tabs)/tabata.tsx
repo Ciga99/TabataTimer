@@ -126,7 +126,8 @@ export default function TabTwoScreen() {
   };
 
   // Calcolo di min(80, 8% della larghezza)
-  const dynamicPadding = Math.min(10, width * 0.08);
+  // const dynamicPadding = Math.min(10, width * 0.08);
+  const dynamicPadding = 90;
 
   const getButtonSizeWidth = () => {
     return Math.min(800, width * 0.9);
@@ -308,6 +309,7 @@ const styles = StyleSheet.create({
   bigButtonContent: {
     alignItems: 'center',
     justifyContent: 'center',
+    flex: 1, 
   },
   phaseText: {
     fontSize: 28,

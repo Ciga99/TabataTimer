@@ -9,6 +9,7 @@ import {
   Switch,
   TextInput,
   TouchableOpacity,
+  useWindowDimensions,
   View
 } from 'react-native';
 import { PickerModal } from './modalSpeker';
@@ -45,6 +46,7 @@ export function TrainingModal({
 }: TrainingModalProps) {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
+  const { width, height } = useWindowDimensions();
 
   // Form state
   // Hook di stato per i dati del modulo proprietà di classe + Change Detection
@@ -108,7 +110,7 @@ export function TrainingModal({
         activeOpacity={1}
         onPress={onClose}>
         <ThemedView
-          style={styles.modalContent}
+          style={[styles.modalContent, { width: width * 0.9, maxHeight: height * 0.85 }]}
           lightColor="#fff"
           darkColor="#2c2c2e">
           <TouchableOpacity activeOpacity={1} style={{ flex: 1 }}>
@@ -252,8 +254,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContent: {
-    width: '90%',
-    maxHeight: '85%',
     borderRadius: 12,
     padding: 20,
   },
