@@ -1,7 +1,7 @@
-import { SPEAKERS } from '@/context/SettingsContext';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { Training } from '@/types/Training';
-import { useEffect, useState } from 'react';
+import { SPEAKERS } from "@/context/SettingsContext";
+import { useColorScheme } from "@/hooks/use-color-scheme";
+import { Training } from "@/types/Training";
+import { useEffect, useState } from "react";
 import {
   Modal,
   ScrollView,
@@ -10,12 +10,12 @@ import {
   TextInput,
   TouchableOpacity,
   useWindowDimensions,
-  View
-} from 'react-native';
-import { PickerModal } from './modalSpeker';
-import { ThemedText } from './themed-text';
-import { ThemedView } from './themed-view';
-import { TimeStepper } from './TimeStepper';
+  View,
+} from "react-native";
+import { PickerModal } from "./modalSpeker";
+import { ThemedText } from "./themed-text";
+import { ThemedView } from "./themed-view";
+import { TimeStepper } from "./TimeStepper";
 
 type TrainingModalProps = {
   visible: boolean;
@@ -23,18 +23,19 @@ type TrainingModalProps = {
   onSave: (training: Training) => void;
   training?: Partial<Training> | null; // null = nuovo, Partial = modifica
   title?: string;
+  showTitleandDescription?: boolean;
 };
 
 const defaultTraining: Training = {
-  title: '',
-  description: '',
+  title: "",
+  description: "",
   cycles: 1,
   serial: 8,
   timeWork: 30,
   timePause: 30,
   timePauseCycle: 30,
   timeTotal: 0,
-  voice: 'Donna',
+  voice: "Donna",
   isVoiceEnabled: true,
 };
 
@@ -43,10 +44,11 @@ export function TrainingModal({
   onClose,
   onSave,
   training,
-  title = 'Nuovo Allenamento',
+  title = "Nuovo Allenamento",
+  showTitleandDescription = true,
 }: TrainingModalProps) {
   const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const isDark = colorScheme === "dark";
   const { width, height } = useWindowDimensions();
 
   // Form state
@@ -68,21 +70,33 @@ export function TrainingModal({
   // Calcola tempo totale quando cambiano i valori
   useEffect(() => {
     const totalTime =
-      formData.cycles * (
-        formData.serial * (formData.timeWork + formData.timePause) - formData.timePause + formData.timePauseCycle
-      ) - formData.timePauseCycle;
+      formData.cycles *
+        (formData.serial * (formData.timeWork + formData.timePause) -
+          formData.timePause +
+          formData.timePauseCycle) -
+      formData.timePauseCycle;
 
-    setFormData(prev => ({ ...prev, timeTotal: Math.max(0, totalTime) }));
-  }, [formData.cycles, formData.serial, formData.timeWork, formData.timePause, formData.timePauseCycle]);
+    setFormData((prev) => ({ ...prev, timeTotal: Math.max(0, totalTime) }));
+  }, [
+    formData.cycles,
+    formData.serial,
+    formData.timeWork,
+    formData.timePause,
+    formData.timePauseCycle,
+  ]);
 
   // Questa funzione dice: "Prendi il campo X e aggiornalo con il valore Y, mantenendo tutto il resto uguale".
-  const updateField = <K extends keyof Training>(field: K, value: Training[K]) => {//value: Training[K]: Il valore corrispondente al tipo esatto di quel campo
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const updateField = <K extends keyof Training>(
+    field: K,
+    value: Training[K],
+  ) => {
+    //value: Training[K]: Il valore corrispondente al tipo esatto di quel campo
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-//   Usa lo spread operator { ...prev } per copiare lo stato precedente.
-// Sostituisce solo il campo [field] con il nuovo value.
-// setFormData aggiorna lo stato in modo immutabile.
+  //   Usa lo spread operator { ...prev } per copiare lo stato precedente.
+  // Sostituisce solo il campo [field] con il nuovo value.
+  // setFormData aggiorna lo stato in modo immutabile.
 
   const handleSave = () => {
     onSave(formData);
@@ -92,16 +106,16 @@ export function TrainingModal({
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
   const inputStyle = [
     styles.input,
     {
-      backgroundColor: isDark ? '#3a3a3c' : '#f2f2f7',
-      color: isDark ? 'white' : 'black',
-      borderColor: isDark ? '#555' : '#ddd',
-    }
+      backgroundColor: isDark ? "#3a3a3c" : "#f2f2f7",
+      color: isDark ? "white" : "black",
+      borderColor: isDark ? "#555" : "#ddd",
+    },
   ];
 
   return (
@@ -109,46 +123,57 @@ export function TrainingModal({
       <TouchableOpacity
         style={styles.modalOverlay}
         activeOpacity={1}
-        onPress={onClose}>
+        onPress={onClose}
+      >
         <ThemedView
-          style={[styles.modalContent, { width: width * 0.9, maxHeight: height * 0.85 }]}
+          style={[
+            styles.modalContent,
+            { width: width * 0.9, maxHeight: height * 0.85 },
+          ]}
           lightColor="#fff"
-          darkColor="#2c2c2e">
+          darkColor="#2c2c2e"
+        >
           <TouchableOpacity activeOpacity={1} style={{ flex: 1 }}>
             <ScrollView showsVerticalScrollIndicator={false}>
               <ThemedText style={styles.modalTitle}>{title}</ThemedText>
 
-              {/* Titolo */}
-              <ThemedText style={styles.label}>Titolo</ThemedText>
-              <TextInput
-                style={inputStyle}
-                value={formData.title}
-                onChangeText={(text) => updateField('title', text)}
-                placeholder="Nome allenamento"
-                placeholderTextColor={isDark ? '#888' : '#999'}
-              />
+              {showTitleandDescription && (
+                <>
+                  {/* Titolo */}
+                  <ThemedText style={styles.label}>Titolo</ThemedText>
+                  <TextInput
+                    style={inputStyle}
+                    value={formData.title}
+                    onChangeText={(text) => updateField("title", text)}
+                    placeholder="Nome allenamento"
+                    placeholderTextColor={isDark ? "#888" : "#999"}
+                  />
 
-              {/* Descrizione */}
-              <ThemedText style={styles.label}>Descrizione</ThemedText>
-              <TextInput
-                style={[inputStyle, styles.textArea]}
-                value={formData.description}
-                onChangeText={(text) => updateField('description', text)}
-                placeholder="Descrizione opzionale"
-                placeholderTextColor={isDark ? '#888' : '#999'}
-                multiline
-                numberOfLines={3}
-              />
+                  {/* Descrizione */}
+                  <ThemedText style={styles.label}>Descrizione</ThemedText>
+                  <TextInput
+                    style={[inputStyle, styles.textArea]}
+                    value={formData.description}
+                    onChangeText={(text) => updateField("description", text)}
+                    placeholder="Descrizione opzionale"
+                    placeholderTextColor={isDark ? "#888" : "#999"}
+                    multiline
+                    numberOfLines={3}
+                  />
+                </>
+              )}
 
               {/* Numero di serie */}
               <ThemedText style={styles.label}>Numero di serie</ThemedText>
               <TextInput
                 style={inputStyle}
                 value={formData.serial.toString()}
-                onChangeText={(text) => updateField('serial', parseInt(text) || 1)}
+                onChangeText={(text) =>
+                  updateField("serial", parseInt(text) || 1)
+                }
                 keyboardType="numeric"
                 placeholder="8"
-                placeholderTextColor={isDark ? '#888' : '#999'}
+                placeholderTextColor={isDark ? "#888" : "#999"}
               />
 
               {/* Numero di cicli */}
@@ -156,17 +181,19 @@ export function TrainingModal({
               <TextInput
                 style={inputStyle}
                 value={formData.cycles.toString()}
-                onChangeText={(text) => updateField('cycles', parseInt(text) || 1)}
+                onChangeText={(text) =>
+                  updateField("cycles", parseInt(text) || 1)
+                }
                 keyboardType="numeric"
                 placeholder="1"
-                placeholderTextColor={isDark ? '#888' : '#999'}
+                placeholderTextColor={isDark ? "#888" : "#999"}
               />
 
               {/* Tempo lavoro */}
               <ThemedText style={styles.label}>Tempo lavoro</ThemedText>
               <TimeStepper
                 value={formData.timeWork}
-                onChange={(v) => updateField('timeWork', v)}
+                onChange={(v) => updateField("timeWork", v)}
                 isDark={isDark}
               />
 
@@ -174,7 +201,7 @@ export function TrainingModal({
               <ThemedText style={styles.label}>Tempo pausa</ThemedText>
               <TimeStepper
                 value={formData.timePause}
-                onChange={(v) => updateField('timePause', v)}
+                onChange={(v) => updateField("timePause", v)}
                 isDark={isDark}
               />
 
@@ -182,7 +209,7 @@ export function TrainingModal({
               <ThemedText style={styles.label}>Tempo pausa ciclo</ThemedText>
               <TimeStepper
                 value={formData.timePauseCycle}
-                onChange={(v) => updateField('timePauseCycle', v)}
+                onChange={(v) => updateField("timePauseCycle", v)}
                 isDark={isDark}
               />
               {/* Voce attiva */}
@@ -190,9 +217,11 @@ export function TrainingModal({
                 <ThemedText style={styles.label}>Voce attiva</ThemedText>
                 <Switch
                   value={formData.isVoiceEnabled}
-                  onValueChange={(value) => updateField('isVoiceEnabled', value)}
-                  trackColor={{ false: '#767577', true: '#007AFF' }}
-                  thumbColor={formData.isVoiceEnabled ? '#fff' : '#f4f3f4'}
+                  onValueChange={(value) =>
+                    updateField("isVoiceEnabled", value)
+                  }
+                  trackColor={{ false: "#767577", true: "#007AFF" }}
+                  thumbColor={formData.isVoiceEnabled ? "#fff" : "#f4f3f4"}
                 />
               </View>
 
@@ -202,7 +231,8 @@ export function TrainingModal({
                   <ThemedText style={styles.label}>Voce</ThemedText>
                   <TouchableOpacity
                     style={[inputStyle, styles.pickerButton]}
-                    onPress={() => setShowVoicePicker(!showVoicePicker)}>
+                    onPress={() => setShowVoicePicker(!showVoicePicker)}
+                  >
                     <ThemedText>{formData.voice}</ThemedText>
                   </TouchableOpacity>
 
@@ -211,7 +241,7 @@ export function TrainingModal({
                     onClose={() => setShowVoicePicker(false)}
                     options={SPEAKERS}
                     selectedValue={formData.voice}
-                    onSelect={(value) => updateField('voice', value)}
+                    onSelect={(value) => updateField("voice", value)}
                     title="Seleziona Voce"
                   />
                 </>
@@ -221,12 +251,16 @@ export function TrainingModal({
               <View style={styles.buttonRow}>
                 <TouchableOpacity
                   style={[styles.button, styles.cancelButton]}
-                  onPress={onClose}>
-                  <ThemedText style={styles.cancelButtonText}>Annulla</ThemedText>
+                  onPress={onClose}
+                >
+                  <ThemedText style={styles.cancelButtonText}>
+                    Annulla
+                  </ThemedText>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.button, styles.saveButton]}
-                  onPress={handleSave}>
+                  onPress={handleSave}
+                >
                   <ThemedText style={styles.saveButtonText}>Salva</ThemedText>
                 </TouchableOpacity>
               </View>
@@ -241,9 +275,9 @@ export function TrainingModal({
 const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
   },
   modalContent: {
     borderRadius: 12,
@@ -251,13 +285,13 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 20,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 20,
-    textAlign: 'center',
+    textAlign: "center",
   },
   label: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
     marginBottom: 6,
     marginTop: 12,
   },
@@ -269,20 +303,20 @@ const styles = StyleSheet.create({
   },
   textArea: {
     height: 80,
-    textAlignVertical: 'top',
+    textAlignVertical: "top",
   },
   switchRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginTop: 12,
   },
   pickerButton: {
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   voiceOptions: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexDirection: "row",
+    justifyContent: "space-around",
     marginTop: 8,
   },
   voiceOption: {
@@ -291,22 +325,22 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   totalTimeContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginTop: 16,
     paddingVertical: 12,
     borderTopWidth: 1,
-    borderTopColor: '#ddd',
+    borderTopColor: "#ddd",
   },
   totalTimeValue: {
     fontSize: 18,
-    fontWeight: '600',
-    color: '#007AFF',
+    fontWeight: "600",
+    color: "#007AFF",
   },
   buttonRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginTop: 24,
     gap: 12,
   },
@@ -314,20 +348,20 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 14,
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: "center",
   },
   cancelButton: {
-    backgroundColor: '#ff3b30',
+    backgroundColor: "#ff3b30",
   },
   cancelButtonText: {
-    color: 'white',
-    fontWeight: '600',
+    color: "white",
+    fontWeight: "600",
   },
   saveButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: "#007AFF",
   },
   saveButtonText: {
-    color: 'white',
-    fontWeight: '600',
+    color: "white",
+    fontWeight: "600",
   },
 });

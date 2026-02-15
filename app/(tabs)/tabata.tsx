@@ -1,47 +1,64 @@
-import { SettingButtonTrayning } from '@/components/homeComponents/smallbutton';
-import { TrainingModal } from '@/components/modaltraynig';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { useAudio } from '@/context/AudioContext';
-import { useTraining } from '@/context/TrainingContext';
-import { useWorkout, WorkoutPhase } from '@/context/WorkoutContext';
-import { Training } from '@/types/Training';
-import * as ScreenOrientation from 'expo-screen-orientation';
-import { useEffect, useState } from 'react';
-import { StyleSheet, TouchableOpacity, useWindowDimensions, View } from 'react-native';
-import { formatTime } from '../helper';
+import { SettingButtonTrayning } from "@/components/homeComponents/smallbutton";
+import { TrainingModal } from "@/components/modaltraynig";
+import { ThemedText } from "@/components/themed-text";
+import { ThemedView } from "@/components/themed-view";
+import { useAudio } from "@/context/AudioContext";
+import { useTraining } from "@/context/TrainingContext";
+import { useWorkout, WorkoutPhase } from "@/context/WorkoutContext";
+import { Training } from "@/types/Training";
+import * as ScreenOrientation from "expo-screen-orientation";
+import { useEffect, useState } from "react";
+import {
+  StyleSheet,
+  TouchableOpacity,
+  useWindowDimensions,
+  View,
+} from "react-native";
+import { formatTime } from "../helper";
 
 const MAX_BUTTON_SIZE = 500;
 const MAX_SMALL_BUTTON_SIZE = 150;
 
 // Helper per il testo della fase
 const getPhaseLabel = (phase: WorkoutPhase, isPaused: boolean): string => {
-  if (isPaused) return 'PAUSA';
+  if (isPaused) return "PAUSA";
   switch (phase) {
-    case 'work': return 'LAVORO';
-    case 'rest': return 'RIPOSO';
-    case 'cycle_rest': return 'PAUSA CICLO';
-    case 'finished': return 'FINITO!';
-    default: return 'PREMI';
+    case "work":
+      return "LAVORO";
+    case "rest":
+      return "RIPOSO";
+    case "cycle_rest":
+      return "PAUSA CICLO";
+    case "finished":
+      return "FINITO!";
+    default:
+      return "PREMI";
   }
 };
 
 // Helper per il colore della fase
 const getPhaseColor = (phase: WorkoutPhase, isPaused: boolean): string => {
-  if (isPaused) return '#9E9E9E';  // Grigio quando in pausa
+  if (isPaused) return "#9E9E9E"; // Grigio quando in pausa
   switch (phase) {
-    case 'work': return '#4CAF50';      // Verde
-    case 'rest': return '#FF9800';       // Arancione
-    case 'cycle_rest': return '#f0f321'; // Blu
-    case 'finished': return '#3027b0';   // Viola
-    default: return '#007AFF';           // Blu default
+    case "work":
+      return "#4CAF50"; // Verde
+    case "rest":
+      return "#FF9800"; // Arancione
+    case "cycle_rest":
+      return "#f0f321"; // Blu
+    case "finished":
+      return "#3027b0"; // Viola
+    default:
+      return "#007AFF"; // Blu default
   }
 };
 
 export default function TabTwoScreen() {
-  const [orientation, setOrientation] = useState<ScreenOrientation.Orientation | null>(null);
+  const [orientation, setOrientation] =
+    useState<ScreenOrientation.Orientation | null>(null);
   const { training, setTraining } = useTraining();
-  const { workoutState, startWorkout, pauseWorkout, resumeWorkout } = useWorkout();
+  const { workoutState, startWorkout, pauseWorkout, resumeWorkout } =
+    useWorkout();
   const { playUserAction } = useAudio();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { width, height } = useWindowDimensions();
@@ -64,15 +81,15 @@ export default function TabTwoScreen() {
   const handleBigButtonPress = () => {
     if (!workoutState.isWorking) {
       // Non in esecuzione: AVVIA
-      playUserAction('start');
+      playUserAction("start");
       startWorkout(training);
     } else if (workoutState.isPaused) {
       // In pausa: RIPRENDI
-      playUserAction('resume');
+      playUserAction("resume");
       resumeWorkout();
     } else {
       // In esecuzione: PAUSA
-      playUserAction('pause');
+      playUserAction("pause");
       pauseWorkout();
     }
   };
@@ -86,10 +103,13 @@ export default function TabTwoScreen() {
     checkOrientation();
 
     // 2. Ascolta i cambiamenti futuri
-    const subscription = ScreenOrientation.addOrientationChangeListener((event) => {
-      setOrientation(event.orientationInfo.orientation);
-    });
-    return () => ScreenOrientation.removeOrientationChangeListener(subscription);
+    const subscription = ScreenOrientation.addOrientationChangeListener(
+      (event) => {
+        setOrientation(event.orientationInfo.orientation);
+      },
+    );
+    return () =>
+      ScreenOrientation.removeOrientationChangeListener(subscription);
   }, []);
 
   // Verifica se siamo in landscape
@@ -101,9 +121,9 @@ export default function TabTwoScreen() {
   useEffect(() => {
     if (!workoutState.isWorking) {
       const totalTime =
-        (training.timeWork * training.serial * training.cycles) +
-        (training.timePause * (training.serial - 1) * training.cycles) +
-        (training.timePauseCycle * (training.cycles - 1));
+        training.timeWork * training.serial * training.cycles +
+        training.timePause * (training.serial - 1) * training.cycles +
+        training.timePauseCycle * (training.cycles - 1);
       setTimeRemaining(totalTime);
     }
   }, [training, workoutState.isWorking]);
@@ -150,7 +170,7 @@ export default function TabTwoScreen() {
     }
     // 2. MOBILE STANDARD (iPhone 13, 14, Galaxy S23 ecc.)
     if (height >= 700) {
-      return height * 0.40; // Dimensione generosa per schermi lunghi
+      return height * 0.4; // Dimensione generosa per schermi lunghi
     }
     // 3. MOBILE PICCOLO (iPhone SE, vecchi modelli)
     return height * 0.35;
@@ -169,13 +189,13 @@ export default function TabTwoScreen() {
     }
     // 3. MOBILE PICCOLO (iPhone SE, vecchi modelli)
     // Altezza sotto i 700dp
-    return height * 0.10 ;
+    return height * 0.1;
   };
   // Stili dinamici per dimensioni reattive
   const dynamicBigButton = {
-    display: 'flex' as const,
-    alignItems: 'center' as const,
-    justifyContent: 'center' as const,
+    display: "flex" as const,
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
     width: getButtonSizeWidth(),
     height: getButtonSizeHeight(),
     borderRadius: 20,
@@ -187,14 +207,15 @@ export default function TabTwoScreen() {
     height: getSmallButtonSize(),
   };
 
-  const clamp = (value : number, min : number, max : number) => Math.min(Math.max(value, min), max);
+  const clamp = (value: number, min: number, max: number) =>
+    Math.min(Math.max(value, min), max);
 
   const dynamicSmallButtonText = {
-    fontSize: clamp((width * 0.07) + 16, 12, 24),
+    fontSize: clamp(width * 0.07 + 16, 12, 24),
   };
 
   return (
-    <ThemedView style={[styles.container, { paddingBottom: dynamicPadding }] }>
+    <ThemedView style={[styles.container, { paddingBottom: dynamicPadding }]}>
       <ThemedText style={styles.totalTimeText}>
         Tempo totale: {formatTime(displayedTime)}
       </ThemedText>
@@ -215,70 +236,107 @@ export default function TabTwoScreen() {
             </ThemedText>
           )}
 
-          {workoutState.phase === 'finished' && (
+          {workoutState.phase === "finished" && (
             <ThemedText style={styles.subText}>Tap per ricominciare</ThemedText>
           )}
         </View>
       </TouchableOpacity>
       {/* {!isLandscape && (    */}
-        {/* // <>   */}
-          <ThemedView style={styles.containerButton}>
-            <SettingButtonTrayning
-              style={[styles.smallButton, dynamicSmallButton, workoutState.isWorking && styles.disabledButton]}
-              title="Work time"
-              onPress={openModal}
-            >
-              <ThemedText style={dynamicSmallButtonText}>{training.timeWork}s</ThemedText>
-            </SettingButtonTrayning>
+      {/* // <>   */}
+      <ThemedView style={styles.containerButton}>
+        <SettingButtonTrayning
+          style={[
+            styles.smallButton,
+            dynamicSmallButton,
+            workoutState.isWorking && styles.disabledButton,
+          ]}
+          title="Work time"
+          onPress={openModal}
+        >
+          <ThemedText style={dynamicSmallButtonText}>
+            {training.timeWork}s
+          </ThemedText>
+        </SettingButtonTrayning>
 
-            <SettingButtonTrayning
-              style={[styles.smallButton, dynamicSmallButton, workoutState.isWorking && styles.disabledButton]}
-              title="Rest time"
-              onPress={openModal}
-            >
-              <ThemedText style={dynamicSmallButtonText}>{training.timePause}s</ThemedText>
-            </SettingButtonTrayning>
+        <SettingButtonTrayning
+          style={[
+            styles.smallButton,
+            dynamicSmallButton,
+            workoutState.isWorking && styles.disabledButton,
+          ]}
+          title="Rest time"
+          onPress={openModal}
+        >
+          <ThemedText style={dynamicSmallButtonText}>
+            {training.timePause}s
+          </ThemedText>
+        </SettingButtonTrayning>
 
-            <SettingButtonTrayning
-              style={[styles.smallButton, dynamicSmallButton, workoutState.isWorking && styles.disabledButton]}
-              title="Series rest"
-              onPress={openModal}
-            >
-              <ThemedText style={dynamicSmallButtonText}>{training.timePauseCycle}s</ThemedText>
-            </SettingButtonTrayning>
+        <SettingButtonTrayning
+          style={[
+            styles.smallButton,
+            dynamicSmallButton,
+            workoutState.isWorking && styles.disabledButton,
+          ]}
+          title="Series rest"
+          onPress={openModal}
+        >
+          <ThemedText style={dynamicSmallButtonText}>
+            {training.timePauseCycle}s
+          </ThemedText>
+        </SettingButtonTrayning>
 
-            <SettingButtonTrayning
-              style={[styles.smallButton, dynamicSmallButton, workoutState.isWorking && styles.disabledButton]}
-              title="Cycle rest"
-              onPress={openModal}
-            >
-              <ThemedText style={dynamicSmallButtonText}>{training.timePauseCycle}s</ThemedText>
-            </SettingButtonTrayning>
+        <SettingButtonTrayning
+          style={[
+            styles.smallButton,
+            dynamicSmallButton,
+            workoutState.isWorking && styles.disabledButton,
+          ]}
+          title="Cycle rest"
+          onPress={openModal}
+        >
+          <ThemedText style={dynamicSmallButtonText}>
+            {training.timePauseCycle}s
+          </ThemedText>
+        </SettingButtonTrayning>
 
-            <SettingButtonTrayning
-              style={[styles.smallButton, dynamicSmallButton, workoutState.isWorking && styles.progressButton]}
-              title="Series"
-              onPress={openModal}
-            >
-              <ThemedText style={dynamicSmallButtonText}>{getSeriesDisplay()}</ThemedText>
-            </SettingButtonTrayning>
+        <SettingButtonTrayning
+          style={[
+            styles.smallButton,
+            dynamicSmallButton,
+            workoutState.isWorking && styles.progressButton,
+          ]}
+          title="Series"
+          onPress={openModal}
+        >
+          <ThemedText style={dynamicSmallButtonText}>
+            {getSeriesDisplay()}
+          </ThemedText>
+        </SettingButtonTrayning>
 
-            <SettingButtonTrayning
-              style={[styles.smallButton, dynamicSmallButton, workoutState.isWorking && styles.progressButton]}
-              title="Cycles"
-              onPress={openModal}
-            >
-              <ThemedText style={dynamicSmallButtonText}>{getCyclesDisplay()}</ThemedText>
-            </SettingButtonTrayning>
-          </ThemedView>
+        <SettingButtonTrayning
+          style={[
+            styles.smallButton,
+            dynamicSmallButton,
+            workoutState.isWorking && styles.progressButton,
+          ]}
+          title="Cycles"
+          onPress={openModal}
+        >
+          <ThemedText style={dynamicSmallButtonText}>
+            {getCyclesDisplay()}
+          </ThemedText>
+        </SettingButtonTrayning>
+      </ThemedView>
 
-          <TrainingModal
-            visible={isModalVisible}
-            onClose={closeModal}
-            onSave={handleSaveTraining}
-            training={training}
-            title="Modifica Allenamento"
-          />
+      <TrainingModal
+        visible={isModalVisible}
+        onClose={closeModal}
+        onSave={handleSaveTraining}
+        training={training}
+        title="Modifica Allenamento"
+        showTitleandDescription={false}
+      />
       {/* </>  */}
       {/* )} */}
     </ThemedView>
@@ -287,8 +345,8 @@ export default function TabTwoScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'column',
-    alignItems: 'center',  
+    flexDirection: "column",
+    alignItems: "center",
     flex: 1,
   },
   totalTimeText: {
@@ -307,47 +365,47 @@ const styles = StyleSheet.create({
   //   elevation: 8,
   // },
   bigButtonContent: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1, 
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
   },
   phaseText: {
     fontSize: 28,
-    fontWeight: 'bold',
-    color: 'white',
-    textAlign: 'center',
+    fontWeight: "bold",
+    color: "white",
+    textAlign: "center",
   },
   timerText: {
     fontSize: 56,
-    fontWeight: 'bold',
-    color: 'white',
+    fontWeight: "bold",
+    color: "white",
     marginTop: 8,
   },
   subText: {
     fontSize: 14,
-    color: 'rgba(255,255,255,0.8)',
+    color: "rgba(255,255,255,0.8)",
     marginTop: 8,
   },
   containerButton: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    justifyContent: "center",
+    flexWrap: "wrap",
     padding: 10,
   },
   smallButton: {
     margin: 8,
-    backgroundColor: '#4aa2ff',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#4aa2ff",
+    justifyContent: "center",
+    alignItems: "center",
     borderRadius: 20,
-    flexGrow: 1,           // Fa sì che il bottone occupi lo spazio rimanente
-    minWidth: 100,         // Se lo schermo è stretto, non scende sotto i 100px
-    maxWidth: '100%',
+    flexGrow: 1, // Fa sì che il bottone occupi lo spazio rimanente
+    minWidth: 100, // Se lo schermo è stretto, non scende sotto i 100px
+    maxWidth: "100%",
   },
   disabledButton: {
     opacity: 0.5,
   },
   progressButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: "#4CAF50",
   },
 });
