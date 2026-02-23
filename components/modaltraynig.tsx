@@ -1,12 +1,12 @@
 import { Colors } from "@/constants/theme";
 import { SPEAKERS } from "@/context/SettingsContext";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import { useTranslation } from "@/hooks/use-translation";
 import { Training } from "@/types/Training";
 import { useEffect, useState } from "react";
 import {
   KeyboardAvoidingView,
   Modal,
-  Platform,
   ScrollView,
   StyleSheet,
   Switch,
@@ -16,8 +16,8 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTranslation } from "@/hooks/use-translation";
 import { PickerModal } from "./modalSpeker";
+import { NumberStepper } from "./NumberStepper";
 import { ThemedText } from "./themed-text";
 import { ThemedView } from "./themed-view";
 import { TimeStepper } from "./TimeStepper";
@@ -26,7 +26,7 @@ type TrainingModalProps = {
   visible: boolean;
   onClose: () => void;
   onSave: (training: Training) => void;
-  training?: Partial<Training> | null; // null = nuovo, Partial = modifica
+  training?: Partial<Training> | null;
   title?: string;
   showTitleandDescription?: boolean;
 };
@@ -55,16 +55,13 @@ export function TrainingModal({
   const colorScheme = useColorScheme();
   const t = useTranslation();
   const isDark = colorScheme === "dark";
-  const themeColors = Colors[colorScheme ?? 'light'];
+  const themeColors = Colors[colorScheme ?? "light"];
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
 
-  // Form state
-  // Hook di stato per i dati del modulo proprietà di classe + Change Detection
   const [formData, setFormData] = useState<Training>(defaultTraining);
   const [showVoicePicker, setShowVoicePicker] = useState(false);
 
-  // Aggiorna formData quando training cambia o modal si apre
   useEffect(() => {
     if (visible) {
       if (training) {
@@ -75,7 +72,6 @@ export function TrainingModal({
     }
   }, [visible, training]);
 
-  // Calcola tempo totale quando cambiano i valori
   useEffect(() => {
     const totalTime =
       formData.cycles *
@@ -83,7 +79,6 @@ export function TrainingModal({
           formData.timePause +
           formData.timePauseCycle) -
       formData.timePauseCycle;
-
     setFormData((prev) => ({ ...prev, timeTotal: Math.max(0, totalTime) }));
   }, [
     formData.cycles,
@@ -93,28 +88,16 @@ export function TrainingModal({
     formData.timePauseCycle,
   ]);
 
-  // Questa funzione dice: "Prendi il campo X e aggiornalo con il valore Y, mantenendo tutto il resto uguale".
   const updateField = <K extends keyof Training>(
     field: K,
     value: Training[K],
   ) => {
-    //value: Training[K]: Il valore corrispondente al tipo esatto di quel campo
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
-
-  //   Usa lo spread operator { ...prev } per copiare lo stato precedente.
-  // Sostituisce solo il campo [field] con il nuovo value.
-  // setFormData aggiorna lo stato in modo immutabile.
 
   const handleSave = () => {
     onSave(formData);
     onClose();
-  };
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
   const inputStyle = [
@@ -126,32 +109,44 @@ export function TrainingModal({
     },
   ];
 
+  // Altezza fissa per permettere lo scroll interno (ScrollView con flex:1)
+  const modalHeight = height * 0.85 - insets.top - insets.bottom;
+
   return (
-    <Modal transparent={true} visible={visible} animationType="fade" statusBarTranslucent={true}>
-      <TouchableOpacity
-        style={styles.modalOverlay}
-        activeOpacity={1}
-        onPress={onClose}
-      >
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={{ width: width * 0.9 }}
-        >
+    <Modal
+      transparent={true}
+      visible={visible}
+      animationType="fade"
+      statusBarTranslucent={true}
+    >
+      <View style={styles.modalOverlay}>
+        {/* Tap fuori dal modal per chiudere (dietro al contenuto) */}
+        <TouchableOpacity
+          style={StyleSheet.absoluteFill}
+          activeOpacity={1}
+          onPress={onClose}
+        />
+
+        {/* behavior="padding" sposta il modal in su senza restringerlo */}
+        <KeyboardAvoidingView behavior="padding" style={{ width: width * 0.9 }}>
           <ThemedView
-            style={[
-              styles.modalContent,
-              { maxHeight: height * 0.85 - insets.top - insets.bottom },
-            ]}
+            style={[styles.modalContent, { height: modalHeight }]}
             lightColor={Colors.light.modalBackground}
             darkColor={Colors.dark.modalBackground}
           >
-          <TouchableOpacity activeOpacity={1}>
-            <ScrollView showsVerticalScrollIndicator={false}>
-              <ThemedText style={styles.modalTitle}>{title ?? t.newTraining}</ThemedText>
+            {/* Titolo fisso */}
+            <ThemedText style={styles.modalTitle}>
+              {title ?? t.newTraining}
+            </ThemedText>
 
+            {/* Contenuto scrollabile — flex:1 funziona perché il parent ha height fissa */}
+            <ScrollView
+              style={{ flex: 1 }}
+              showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps="handled"
+            >
               {showTitleandDescription && (
                 <>
-                  {/* Titolo */}
                   <ThemedText style={styles.label}>{t.fieldTitle}</ThemedText>
                   <TextInput
                     style={inputStyle}
@@ -161,8 +156,9 @@ export function TrainingModal({
                     placeholderTextColor={themeColors.placeholder}
                   />
 
-                  {/* Descrizione */}
-                  <ThemedText style={styles.label}>{t.fieldDescription}</ThemedText>
+                  <ThemedText style={styles.label}>
+                    {t.fieldDescription}
+                  </ThemedText>
                   <TextInput
                     style={[inputStyle, styles.textArea]}
                     value={formData.description}
@@ -177,28 +173,20 @@ export function TrainingModal({
 
               {/* Numero di serie */}
               <ThemedText style={styles.label}>{t.numberOfSeries}</ThemedText>
-              <TextInput
-                style={inputStyle}
-                value={formData.serial.toString()}
-                onChangeText={(text) =>
-                  updateField("serial", parseInt(text) || 1)
-                }
-                keyboardType="numeric"
-                placeholder="8"
-                placeholderTextColor={themeColors.placeholder}
+              <NumberStepper
+                value={formData.serial}
+                onChange={(v) => updateField("serial", v)}
+                min={1}
+                max={99}
               />
 
               {/* Numero di cicli */}
               <ThemedText style={styles.label}>{t.numberOfCycles}</ThemedText>
-              <TextInput
-                style={inputStyle}
-                value={formData.cycles.toString()}
-                onChangeText={(text) =>
-                  updateField("cycles", parseInt(text) || 1)
-                }
-                keyboardType="numeric"
-                placeholder="1"
-                placeholderTextColor={themeColors.placeholder}
+              <NumberStepper
+                value={formData.cycles}
+                onChange={(v) => updateField("cycles", v)}
+                min={1}
+                max={99}
               />
 
               {/* Tempo lavoro */}
@@ -218,12 +206,15 @@ export function TrainingModal({
               />
 
               {/* Tempo pausa ciclo */}
-              <ThemedText style={styles.label}>{t.cyclePauseTimeLabel}</ThemedText>
+              <ThemedText style={styles.label}>
+                {t.cyclePauseTimeLabel}
+              </ThemedText>
               <TimeStepper
                 value={formData.timePauseCycle}
                 onChange={(v) => updateField("timePauseCycle", v)}
                 isDark={isDark}
               />
+
               {/* Voce attiva */}
               <View style={styles.switchRow}>
                 <ThemedText style={styles.label}>{t.voiceActive}</ThemedText>
@@ -258,27 +249,39 @@ export function TrainingModal({
                   />
                 </>
               )}
-
-              {/* Pulsanti azione */}
-              <View style={styles.buttonRow}>
-                <TouchableOpacity
-                  style={[styles.button, { backgroundColor: themeColors.destructive }]}
-                  onPress={onClose}
-                >
-                  <ThemedText style={styles.buttonText}>{t.cancel}</ThemedText>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.button, { backgroundColor: themeColors.primary }]}
-                  onPress={handleSave}
-                >
-                  <ThemedText style={[styles.buttonText, { color: themeColors.textOnPrimary }]}>{t.save}</ThemedText>
-                </TouchableOpacity>
-              </View>
             </ScrollView>
-          </TouchableOpacity>
+
+            {/* Pulsanti fissi in fondo — sempre visibili */}
+            <View style={styles.buttonRow}>
+              <TouchableOpacity
+                style={[
+                  styles.button,
+                  { backgroundColor: themeColors.destructive },
+                ]}
+                onPress={onClose}
+              >
+                <ThemedText style={styles.buttonText}>{t.cancel}</ThemedText>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.button,
+                  { backgroundColor: themeColors.primary },
+                ]}
+                onPress={handleSave}
+              >
+                <ThemedText
+                  style={[
+                    styles.buttonText,
+                    { color: themeColors.textOnPrimary },
+                  ]}
+                >
+                  {t.save}
+                </ThemedText>
+              </TouchableOpacity>
+            </View>
           </ThemedView>
         </KeyboardAvoidingView>
-      </TouchableOpacity>
+      </View>
     </Modal>
   );
 }
@@ -297,14 +300,16 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 20,
     fontWeight: "600",
-    marginBottom: 20,
+    marginBottom: 12,
     textAlign: "center",
+    lineHeight: 26,
   },
   label: {
     fontSize: 14,
     fontWeight: "500",
     marginBottom: 6,
     marginTop: 12,
+    lineHeight: 20,
   },
   input: {
     borderWidth: 1,
@@ -325,34 +330,10 @@ const styles = StyleSheet.create({
   pickerButton: {
     justifyContent: "center",
   },
-  voiceOptions: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginTop: 8,
-  },
-  voiceOption: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
-  },
-  totalTimeContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 16,
-    paddingVertical: 12,
-    borderTopWidth: 1,
-    borderTopColor: "#ddd",
-  },
-  totalTimeValue: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#00A896",
-  },
   buttonRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 24,
+    marginTop: 16,
     gap: 12,
   },
   button: {

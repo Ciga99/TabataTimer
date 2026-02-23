@@ -46,8 +46,9 @@ export const translations = {
     selectVoice: 'Seleziona Voce',
     cancel: 'Annulla',
     save: 'Salva',
-    // TimeStepper
+    // TimeStepper / NumberStepper
     enterTime: 'Inserisci tempo',
+    enterNumber: 'Inserisci valore',
     minutes: 'Minuti',
     seconds: 'Secondi',
     confirm: 'Conferma',
@@ -108,8 +109,9 @@ export const translations = {
     selectVoice: 'Select Voice',
     cancel: 'Cancel',
     save: 'Save',
-    // TimeStepper
+    // TimeStepper / NumberStepper
     enterTime: 'Enter time',
+    enterNumber: 'Enter value',
     minutes: 'Minutes',
     seconds: 'Seconds',
     confirm: 'Confirm',
