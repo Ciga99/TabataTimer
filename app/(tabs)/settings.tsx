@@ -7,6 +7,7 @@ import { Colors } from '@/constants/theme';
 import { LANGUAGES, useSettings } from '@/context/SettingsContext';
 import { useTheme } from '@/context/ThemeContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useTranslation } from '@/hooks/use-translation';
 import Slider from '@react-native-community/slider';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Switch, TouchableOpacity } from 'react-native';
@@ -29,6 +30,7 @@ export default function TabTwoScreen() {
   const { isDarkMode, setThemeMode } = useTheme();
   const colorScheme = useColorScheme();
   const themeColors = Colors[colorScheme ?? 'light'];
+  const t = useTranslation();
 
   const [languagePickerVisible, setLanguagePickerVisible] = useState(false);
   const [speakerPickerVisible, setSpeakerPickerVisible] = useState(false);
@@ -39,8 +41,8 @@ export default function TabTwoScreen() {
       <ScrollView>
         <ThemedView>
           {/* Sezione Aspetto */}
-          <Card title="Aspetto">
-            <SettingRow label="Modalità Scura">
+          <Card title={t.appearance}>
+            <SettingRow label={t.darkMode}>
               <Switch
                 trackColor={{ false: '#767577', true: themeColors.primary }}
                 onValueChange={(value) => setThemeMode(value ? 'dark' : 'light')}
@@ -50,8 +52,8 @@ export default function TabTwoScreen() {
           </Card>
 
           {/* Sezione Suoni */}
-          <Card title="Suoni">
-            <SettingRow label="Voci Abilitate">
+          <Card title={t.sounds}>
+            <SettingRow label={t.voiceEnabled}>
               <Switch
                 trackColor={{ false: '#767577', true: themeColors.primary }}
                 value={voiceActive}
@@ -61,7 +63,7 @@ export default function TabTwoScreen() {
             {voiceActive && (
               // blocco di codice condizionale deve avere sempre un solo "padre". <> ... </>. È come un contenitore invisibile che non sporca il layout.
               <>
-                <SettingRow label="Lingua">
+                <SettingRow label={t.language}>
                   <TouchableOpacity
                     onPress={() => setLanguagePickerVisible(true)}
                     style={[styles.pickerButton, { borderColor: themeColors.border, borderWidth: 1 }]}>
@@ -73,10 +75,10 @@ export default function TabTwoScreen() {
                     options={LANGUAGES}
                     selectedValue={language}
                     onSelect={setLanguage}
-                    title="Seleziona Lingua"
+                    title={t.selectLanguage}
                   />
                 </SettingRow>
-                <SettingRow label="Volume" slider={true}>
+                <SettingRow label={t.volume} slider={true}>
                   <ThemedView lightColor="transparent" darkColor="transparent">
                     <Slider
                       style={{ marginTop: 20 }}
@@ -93,7 +95,7 @@ export default function TabTwoScreen() {
               </>
             )}
           </Card>
-          <ThemedText >Versione: 0.0.0</ThemedText>
+          <ThemedText>{t.version}</ThemedText>
         </ThemedView>
       </ScrollView>
     </ThemedView>

@@ -1,5 +1,6 @@
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useTranslation } from '@/hooks/use-translation';
 import { useState } from 'react';
 import {
   Modal,
@@ -30,6 +31,7 @@ export function TimeStepper({
 }: TimeStepperProps) {
   const colorScheme = useColorScheme();
   const themeColors = Colors[colorScheme ?? 'light'];
+  const t = useTranslation();
   const [showModal, setShowModal] = useState(false);
   const [inputMinutes, setInputMinutes] = useState('');
   const [inputSeconds, setInputSeconds] = useState('');
@@ -105,11 +107,11 @@ export function TimeStepper({
             darkColor={Colors.dark.modalBackground}
           >
             <TouchableOpacity activeOpacity={1}>
-              <ThemedText style={styles.modalTitle}>Inserisci tempo</ThemedText>
+              <ThemedText style={styles.modalTitle}>{t.enterTime}</ThemedText>
 
               <View style={styles.inputRow}>
                 <View style={styles.inputGroup}>
-                  <ThemedText style={styles.inputLabel}>Minuti</ThemedText>
+                  <ThemedText style={styles.inputLabel}>{t.minutes}</ThemedText>
                   <TextInput
                     style={[styles.timeInput, { backgroundColor: inputBg, color: inputColor, borderColor: inputBorder }]}
                     value={inputMinutes}
@@ -125,7 +127,7 @@ export function TimeStepper({
                 <ThemedText style={styles.separator}>:</ThemedText>
 
                 <View style={styles.inputGroup}>
-                  <ThemedText style={styles.inputLabel}>Secondi</ThemedText>
+                  <ThemedText style={styles.inputLabel}>{t.seconds}</ThemedText>
                   <TextInput
                     style={[styles.timeInput, { backgroundColor: inputBg, color: inputColor, borderColor: inputBorder }]}
                     value={inputSeconds}
@@ -144,13 +146,13 @@ export function TimeStepper({
                   style={[styles.modalButton, { backgroundColor: themeColors.destructive }]}
                   onPress={() => setShowModal(false)}
                 >
-                  <ThemedText style={styles.buttonText}>Annulla</ThemedText>
+                  <ThemedText style={styles.buttonText}>{t.cancel}</ThemedText>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.modalButton, { backgroundColor: themeColors.primary }]}
                   onPress={handleConfirm}
                 >
-                  <ThemedText style={[styles.buttonText, { color: themeColors.textOnPrimary }]}>Conferma</ThemedText>
+                  <ThemedText style={[styles.buttonText, { color: themeColors.textOnPrimary }]}>{t.confirm}</ThemedText>
                 </TouchableOpacity>
               </View>
             </TouchableOpacity>

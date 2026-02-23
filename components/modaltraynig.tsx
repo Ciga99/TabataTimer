@@ -16,6 +16,7 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTranslation } from "@/hooks/use-translation";
 import { PickerModal } from "./modalSpeker";
 import { ThemedText } from "./themed-text";
 import { ThemedView } from "./themed-view";
@@ -48,10 +49,11 @@ export function TrainingModal({
   onClose,
   onSave,
   training,
-  title = "Nuovo Allenamento",
+  title,
   showTitleandDescription = true,
 }: TrainingModalProps) {
   const colorScheme = useColorScheme();
+  const t = useTranslation();
   const isDark = colorScheme === "dark";
   const themeColors = Colors[colorScheme ?? 'light'];
   const { width, height } = useWindowDimensions();
@@ -145,27 +147,27 @@ export function TrainingModal({
           >
           <TouchableOpacity activeOpacity={1}>
             <ScrollView showsVerticalScrollIndicator={false}>
-              <ThemedText style={styles.modalTitle}>{title}</ThemedText>
+              <ThemedText style={styles.modalTitle}>{title ?? t.newTraining}</ThemedText>
 
               {showTitleandDescription && (
                 <>
                   {/* Titolo */}
-                  <ThemedText style={styles.label}>Titolo</ThemedText>
+                  <ThemedText style={styles.label}>{t.fieldTitle}</ThemedText>
                   <TextInput
                     style={inputStyle}
                     value={formData.title}
                     onChangeText={(text) => updateField("title", text)}
-                    placeholder="Nome allenamento"
+                    placeholder={t.titlePlaceholder}
                     placeholderTextColor={themeColors.placeholder}
                   />
 
                   {/* Descrizione */}
-                  <ThemedText style={styles.label}>Descrizione</ThemedText>
+                  <ThemedText style={styles.label}>{t.fieldDescription}</ThemedText>
                   <TextInput
                     style={[inputStyle, styles.textArea]}
                     value={formData.description}
                     onChangeText={(text) => updateField("description", text)}
-                    placeholder="Descrizione opzionale"
+                    placeholder={t.descriptionPlaceholder}
                     placeholderTextColor={themeColors.placeholder}
                     multiline
                     numberOfLines={3}
@@ -174,7 +176,7 @@ export function TrainingModal({
               )}
 
               {/* Numero di serie */}
-              <ThemedText style={styles.label}>Numero di serie</ThemedText>
+              <ThemedText style={styles.label}>{t.numberOfSeries}</ThemedText>
               <TextInput
                 style={inputStyle}
                 value={formData.serial.toString()}
@@ -187,7 +189,7 @@ export function TrainingModal({
               />
 
               {/* Numero di cicli */}
-              <ThemedText style={styles.label}>Numero di cicli</ThemedText>
+              <ThemedText style={styles.label}>{t.numberOfCycles}</ThemedText>
               <TextInput
                 style={inputStyle}
                 value={formData.cycles.toString()}
@@ -200,7 +202,7 @@ export function TrainingModal({
               />
 
               {/* Tempo lavoro */}
-              <ThemedText style={styles.label}>Tempo lavoro</ThemedText>
+              <ThemedText style={styles.label}>{t.workTimeLabel}</ThemedText>
               <TimeStepper
                 value={formData.timeWork}
                 onChange={(v) => updateField("timeWork", v)}
@@ -208,7 +210,7 @@ export function TrainingModal({
               />
 
               {/* Tempo pausa */}
-              <ThemedText style={styles.label}>Tempo pausa</ThemedText>
+              <ThemedText style={styles.label}>{t.pauseTimeLabel}</ThemedText>
               <TimeStepper
                 value={formData.timePause}
                 onChange={(v) => updateField("timePause", v)}
@@ -216,7 +218,7 @@ export function TrainingModal({
               />
 
               {/* Tempo pausa ciclo */}
-              <ThemedText style={styles.label}>Tempo pausa ciclo</ThemedText>
+              <ThemedText style={styles.label}>{t.cyclePauseTimeLabel}</ThemedText>
               <TimeStepper
                 value={formData.timePauseCycle}
                 onChange={(v) => updateField("timePauseCycle", v)}
@@ -224,7 +226,7 @@ export function TrainingModal({
               />
               {/* Voce attiva */}
               <View style={styles.switchRow}>
-                <ThemedText style={styles.label}>Voce attiva</ThemedText>
+                <ThemedText style={styles.label}>{t.voiceActive}</ThemedText>
                 <Switch
                   value={formData.isVoiceEnabled}
                   onValueChange={(value) =>
@@ -238,7 +240,7 @@ export function TrainingModal({
               {/* Selettore voce */}
               {formData.isVoiceEnabled && (
                 <>
-                  <ThemedText style={styles.label}>Voce</ThemedText>
+                  <ThemedText style={styles.label}>{t.voice}</ThemedText>
                   <TouchableOpacity
                     style={[inputStyle, styles.pickerButton]}
                     onPress={() => setShowVoicePicker(!showVoicePicker)}
@@ -252,7 +254,7 @@ export function TrainingModal({
                     options={SPEAKERS}
                     selectedValue={formData.voice}
                     onSelect={(value) => updateField("voice", value)}
-                    title="Seleziona Voce"
+                    title={t.selectVoice}
                   />
                 </>
               )}
@@ -263,15 +265,13 @@ export function TrainingModal({
                   style={[styles.button, { backgroundColor: themeColors.destructive }]}
                   onPress={onClose}
                 >
-                  <ThemedText style={styles.buttonText}>
-                    Annulla
-                  </ThemedText>
+                  <ThemedText style={styles.buttonText}>{t.cancel}</ThemedText>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.button, { backgroundColor: themeColors.primary }]}
                   onPress={handleSave}
                 >
-                  <ThemedText style={[styles.buttonText, { color: themeColors.textOnPrimary }]}>Salva</ThemedText>
+                  <ThemedText style={[styles.buttonText, { color: themeColors.textOnPrimary }]}>{t.save}</ThemedText>
                 </TouchableOpacity>
               </View>
             </ScrollView>

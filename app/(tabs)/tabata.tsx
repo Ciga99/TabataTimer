@@ -7,7 +7,9 @@ import { useAudio } from "@/context/AudioContext";
 import { useTraining } from "@/context/TrainingContext";
 import { useWorkout, WorkoutPhase } from "@/context/WorkoutContext";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import { useTranslation } from "@/hooks/use-translation";
 import { Training } from "@/types/Training";
+import { TranslationKeys } from "@/constants/translations";
 import * as ScreenOrientation from "expo-screen-orientation";
 import { useEffect, useState } from "react";
 import {
@@ -22,19 +24,19 @@ const MAX_BUTTON_SIZE = 500;
 const MAX_SMALL_BUTTON_SIZE = 150;
 
 // Helper per il testo della fase
-const getPhaseLabel = (phase: WorkoutPhase, isPaused: boolean): string => {
-  if (isPaused) return "PAUSA";
+const getPhaseLabel = (phase: WorkoutPhase, isPaused: boolean, t: TranslationKeys): string => {
+  if (isPaused) return t.phasePaused;
   switch (phase) {
     case "work":
-      return "LAVORO";
+      return t.phaseWork;
     case "rest":
-      return "RIPOSO";
+      return t.phaseRest;
     case "cycle_rest":
-      return "PAUSA CICLO";
+      return t.phaseCycleRest;
     case "finished":
-      return "FINITO!";
+      return t.phaseFinished;
     default:
-      return "PREMI";
+      return t.phasePress;
   }
 };
 
@@ -70,6 +72,7 @@ export default function TabTwoScreen() {
   const colors = Colors[colorScheme ?? "light"];
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { width, height } = useWindowDimensions();
+  const t = useTranslation();
   const [timeRemaining, setTimeRemaining] = useState(0);
 
   const openModal = () => {
@@ -231,7 +234,7 @@ export default function TabTwoScreen() {
   return (
     <ThemedView style={[styles.container, { paddingBottom: dynamicPadding }]}>
       <ThemedText style={styles.totalTimeText}>
-        Tempo totale: {formatTime(displayedTime)}
+        {t.totalTime}: {formatTime(displayedTime)}
       </ThemedText>
 
       <TouchableOpacity
@@ -241,7 +244,7 @@ export default function TabTwoScreen() {
       >
         <View style={styles.bigButtonContent}>
           <ThemedText style={styles.phaseText}>
-            {getPhaseLabel(workoutState.phase, workoutState.isPaused)}
+            {getPhaseLabel(workoutState.phase, workoutState.isPaused, t)}
           </ThemedText>
 
           {workoutState.isWorking && (
@@ -251,7 +254,7 @@ export default function TabTwoScreen() {
           )}
 
           {workoutState.phase === "finished" && (
-            <ThemedText style={styles.subText}>Tap per ricominciare</ThemedText>
+            <ThemedText style={styles.subText}>{t.tapToRestart}</ThemedText>
           )}
         </View>
       </TouchableOpacity>
@@ -265,7 +268,7 @@ export default function TabTwoScreen() {
             { backgroundColor: colors.secondary },
             workoutState.isWorking && styles.disabledButton,
           ]}
-          title="Work time"
+          title={t.btnWorkTime}
           onPress={openModal}
         >
           <ThemedText style={[dynamicSmallButtonText, { color: colors.text }]}>
@@ -280,7 +283,7 @@ export default function TabTwoScreen() {
             { backgroundColor: colors.secondary },
             workoutState.isWorking && styles.disabledButton,
           ]}
-          title="Rest time"
+          title={t.btnRestTime}
           onPress={openModal}
         >
           <ThemedText style={[dynamicSmallButtonText, { color: colors.text }]}>
@@ -295,7 +298,7 @@ export default function TabTwoScreen() {
             { backgroundColor: colors.secondary },
             workoutState.isWorking && styles.disabledButton,
           ]}
-          title="Series rest"
+          title={t.btnSeriesRest}
           onPress={openModal}
         >
           <ThemedText style={[dynamicSmallButtonText, { color: colors.text }]}>
@@ -310,7 +313,7 @@ export default function TabTwoScreen() {
             { backgroundColor: colors.secondary },
             workoutState.isWorking && styles.disabledButton,
           ]}
-          title="Cycle rest"
+          title={t.btnCycleRest}
           onPress={openModal}
         >
           <ThemedText style={[dynamicSmallButtonText, { color: colors.text }]}>
@@ -325,7 +328,7 @@ export default function TabTwoScreen() {
             { backgroundColor: colors.primary },
             workoutState.isWorking && styles.progressButton,
           ]}
-          title="Series"
+          title={t.btnSeries}
           onPress={openModal}
         >
           <ThemedText
@@ -342,7 +345,7 @@ export default function TabTwoScreen() {
             { backgroundColor: colors.primary },
             workoutState.isWorking && styles.progressButton,
           ]}
-          title="Cycles"
+          title={t.btnCycles}
           onPress={openModal}
         >
           <ThemedText
@@ -358,7 +361,7 @@ export default function TabTwoScreen() {
         onClose={closeModal}
         onSave={handleSaveTraining}
         training={training}
-        title="Modifica Allenamento"
+        title={t.editTraining}
         showTitleandDescription={false}
       />
       {/* </>  */}

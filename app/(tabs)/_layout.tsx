@@ -4,6 +4,7 @@ import { Colors } from '@/constants/theme';
 import { useAudio } from '@/context/AudioContext';
 import { useWorkout } from '@/context/WorkoutContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useTranslation } from '@/hooks/use-translation';
 import { Tabs } from 'expo-router';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -11,6 +12,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 function WorkingTabBar() {
   const { stopWorkout } = useWorkout();
   const { playUserAction } = useAudio();
+  const t = useTranslation();
 
   const handleStop = () => {
     playUserAction('reset');
@@ -21,7 +23,7 @@ function WorkingTabBar() {
     <View style={styles.workingTabBarContainer}>
       <TouchableOpacity style={styles.workingButton} activeOpacity={0.8} onPress={handleStop}>
         <IconSymbol name="stop" size={24} color="white" />
-        <Text style={styles.workingButtonText}>STOP</Text>
+        <Text style={styles.workingButtonText}>{t.stop}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -31,13 +33,14 @@ export default function TabLayout() {
   const colorScheme = useColorScheme();
   const { workoutState } = useWorkout();
   const isWorking = workoutState.isWorking;
+  const t = useTranslation();
 
   return (
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: true,
-        headerTitle: 'TABATA TIMER',
+        headerTitle: t.headerTitle,
         headerTitleAlign: 'center',
         headerStyle: {
           backgroundColor: Colors[colorScheme ?? 'light'].background,
@@ -56,19 +59,19 @@ export default function TabLayout() {
       <Tabs.Screen
         name="tabata"
         options={{
-          title: 'Tabata',
+          title: t.tabTabata,
           tabBarIcon: ({ color, focused }) => <TabIcon name="house.fill" color={color} focused={focused} />
         }} />
       <Tabs.Screen
         name="presets"
         options={{
-          title: 'Presets',
+          title: t.tabPresets,
           tabBarIcon: ({ color, focused }) => <TabIcon name="paperplane.fill" color={color} focused={focused} />
         }} />
       <Tabs.Screen
         name="settings"
         options={{
-          title: 'Settings',
+          title: t.tabSettings,
           tabBarIcon: ({ color, focused }) => <TabIcon name="gearshape.fill" color={color} focused={focused} />
         }} />
     </Tabs>

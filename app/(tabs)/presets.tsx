@@ -5,6 +5,7 @@ import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { usePresets } from '@/context/PresetsContext';
 import { useTraining } from '@/context/TrainingContext';
+import { useTranslation } from '@/hooks/use-translation';
 import { Preset, Training } from '@/types/Training';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
@@ -14,6 +15,7 @@ import { Swipeable } from 'react-native-gesture-handler';
 export default function PresetsScreen() {
   const { presets, addPreset, updatePreset, deletePreset, getPresetById, isLoaded } = usePresets();
   const { setTraining } = useTraining();
+  const t = useTranslation();
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [presetToEdit, setPresetToEdit] = useState<string | null>(null);
@@ -113,7 +115,7 @@ export default function PresetsScreen() {
   if (!isLoaded) {
     return (
       <ThemedView style={styles.container}>
-        <ThemedText style={styles.loadingText}>Caricamento...</ThemedText>
+        <ThemedText style={styles.loadingText}>{t.loading}</ThemedText>
       </ThemedView>
     );
   }
@@ -144,7 +146,7 @@ export default function PresetsScreen() {
                     <View style={styles.infoContainer}>
                       <ThemedText style={styles.description}>{item.description}</ThemedText>
                       <ThemedText style={styles.details}>
-                        Cicli: {item.cycles} - Serie: {item.serial} - tempo serie: {item.timeWork}s
+                        {t.cyclesLabel}: {item.cycles} - {t.seriesLabel}: {item.serial} - {t.seriesTimeLabel}: {item.timeWork}s
                       </ThemedText>
                     </View>
                   </View>
@@ -166,7 +168,7 @@ export default function PresetsScreen() {
         onClose={closeModal}
         onSave={handleSaveTraining}
         training={getModalTraining()}
-        title={isCreatingNew ? 'Nuovo Preset' : 'Modifica Preset'}
+        title={isCreatingNew ? t.newPreset : t.editPreset}
       />
     </ThemedView>
   );
