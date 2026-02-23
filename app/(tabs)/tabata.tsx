@@ -2,10 +2,11 @@ import { SettingButtonTrayning } from "@/components/homeComponents/smallbutton";
 import { TrainingModal } from "@/components/modaltraynig";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import { Colors } from "@/constants/theme";
 import { useAudio } from "@/context/AudioContext";
 import { useTraining } from "@/context/TrainingContext";
 import { useWorkout, WorkoutPhase } from "@/context/WorkoutContext";
-import { Colors } from "@/constants/theme";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 import { Training } from "@/types/Training";
 import * as ScreenOrientation from "expo-screen-orientation";
 import { useEffect, useState } from "react";
@@ -15,7 +16,6 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
-import { useColorScheme } from "@/hooks/use-color-scheme";
 import { formatTime } from "../helper";
 
 const MAX_BUTTON_SIZE = 500;
@@ -39,7 +39,11 @@ const getPhaseLabel = (phase: WorkoutPhase, isPaused: boolean): string => {
 };
 
 // Helper per il colore della fase (theme-aware)
-const getPhaseColor = (phase: WorkoutPhase, isPaused: boolean, primary: string): string => {
+const getPhaseColor = (
+  phase: WorkoutPhase,
+  isPaused: boolean,
+  primary: string,
+): string => {
   if (isPaused) return "#9E9E9E";
   switch (phase) {
     case "work":
@@ -63,7 +67,7 @@ export default function TabTwoScreen() {
     useWorkout();
   const { playUserAction } = useAudio();
   const colorScheme = useColorScheme();
-  const colors = Colors[colorScheme ?? 'light'];
+  const colors = Colors[colorScheme ?? "light"];
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { width, height } = useWindowDimensions();
   const [timeRemaining, setTimeRemaining] = useState(0);
@@ -203,7 +207,11 @@ export default function TabTwoScreen() {
     width: getButtonSizeWidth(),
     height: getButtonSizeHeight(),
     borderRadius: 20,
-    backgroundColor: getPhaseColor(workoutState.phase, workoutState.isPaused, colors.primary),
+    backgroundColor: getPhaseColor(
+      workoutState.phase,
+      workoutState.isPaused,
+      colors.primary,
+    ),
   };
 
   const dynamicSmallButton = {
@@ -217,6 +225,8 @@ export default function TabTwoScreen() {
   const dynamicSmallButtonText = {
     fontSize: clamp(width * 0.07 + 16, 12, 24),
   };
+
+  const timerFontSize = Math.min(56, getButtonSizeHeight() * 0.5);
 
   return (
     <ThemedView style={[styles.container, { paddingBottom: dynamicPadding }]}>
@@ -235,7 +245,7 @@ export default function TabTwoScreen() {
           </ThemedText>
 
           {workoutState.isWorking && (
-            <ThemedText style={styles.timerText}>
+            <ThemedText style={[styles.timerText, { fontSize: timerFontSize, lineHeight: timerFontSize * 1.2 }]}>
               {formatTime(workoutState.phaseTimeRemaining)}
             </ThemedText>
           )}
@@ -318,7 +328,9 @@ export default function TabTwoScreen() {
           title="Series"
           onPress={openModal}
         >
-          <ThemedText style={[dynamicSmallButtonText, { color: colors.textOnPrimary }]}>
+          <ThemedText
+            style={[dynamicSmallButtonText, { color: colors.textOnPrimary }]}
+          >
             {getSeriesDisplay()}
           </ThemedText>
         </SettingButtonTrayning>
@@ -333,7 +345,9 @@ export default function TabTwoScreen() {
           title="Cycles"
           onPress={openModal}
         >
-          <ThemedText style={[dynamicSmallButtonText, { color: colors.textOnPrimary }]}>
+          <ThemedText
+            style={[dynamicSmallButtonText, { color: colors.textOnPrimary }]}
+          >
             {getCyclesDisplay()}
           </ThemedText>
         </SettingButtonTrayning>
@@ -381,6 +395,7 @@ const styles = StyleSheet.create({
   },
   phaseText: {
     fontSize: 28,
+    lineHeight: 36,
     fontWeight: "bold",
     color: "white",
     textAlign: "center",
@@ -389,7 +404,7 @@ const styles = StyleSheet.create({
     fontSize: 56,
     fontWeight: "bold",
     color: "white",
-    marginTop: 8,
+    marginTop: 10,
   },
   subText: {
     fontSize: 14,

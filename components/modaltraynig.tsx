@@ -4,7 +4,9 @@ import { useColorScheme } from "@/hooks/use-color-scheme";
 import { Training } from "@/types/Training";
 import { useEffect, useState } from "react";
 import {
+  KeyboardAvoidingView,
   Modal,
+  Platform,
   ScrollView,
   StyleSheet,
   Switch,
@@ -13,6 +15,7 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PickerModal } from "./modalSpeker";
 import { ThemedText } from "./themed-text";
 import { ThemedView } from "./themed-view";
@@ -52,6 +55,7 @@ export function TrainingModal({
   const isDark = colorScheme === "dark";
   const themeColors = Colors[colorScheme ?? 'light'];
   const { width, height } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
 
   // Form state
   // Hook di stato per i dati del modulo proprietà di classe + Change Detection
@@ -121,21 +125,25 @@ export function TrainingModal({
   ];
 
   return (
-    <Modal transparent={true} visible={visible} animationType="fade">
+    <Modal transparent={true} visible={visible} animationType="fade" statusBarTranslucent={true}>
       <TouchableOpacity
         style={styles.modalOverlay}
         activeOpacity={1}
         onPress={onClose}
       >
-        <ThemedView
-          style={[
-            styles.modalContent,
-            { width: width * 0.9, maxHeight: height * 0.85 },
-          ]}
-          lightColor={Colors.light.modalBackground}
-          darkColor={Colors.dark.modalBackground}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={{ width: width * 0.9 }}
         >
-          <TouchableOpacity activeOpacity={1} style={{ flex: 1 }}>
+          <ThemedView
+            style={[
+              styles.modalContent,
+              { maxHeight: height * 0.85 - insets.top - insets.bottom },
+            ]}
+            lightColor={Colors.light.modalBackground}
+            darkColor={Colors.dark.modalBackground}
+          >
+          <TouchableOpacity activeOpacity={1}>
             <ScrollView showsVerticalScrollIndicator={false}>
               <ThemedText style={styles.modalTitle}>{title}</ThemedText>
 
@@ -268,7 +276,8 @@ export function TrainingModal({
               </View>
             </ScrollView>
           </TouchableOpacity>
-        </ThemedView>
+          </ThemedView>
+        </KeyboardAvoidingView>
       </TouchableOpacity>
     </Modal>
   );
