@@ -3,13 +3,13 @@ import { TrainingModal } from "@/components/modaltraynig";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { Colors } from "@/constants/theme";
+import { TranslationKeys } from "@/constants/translations";
 import { useAudio } from "@/context/AudioContext";
 import { useTraining } from "@/context/TrainingContext";
 import { useWorkout, WorkoutPhase } from "@/context/WorkoutContext";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useTranslation } from "@/hooks/use-translation";
 import { Training } from "@/types/Training";
-import { TranslationKeys } from "@/constants/translations";
 import * as ScreenOrientation from "expo-screen-orientation";
 import { useEffect, useState } from "react";
 import {
@@ -20,11 +20,12 @@ import {
 } from "react-native";
 import { formatTime } from "../helper";
 
-const MAX_BUTTON_SIZE = 500;
-const MAX_SMALL_BUTTON_SIZE = 150;
-
 // Helper per il testo della fase
-const getPhaseLabel = (phase: WorkoutPhase, isPaused: boolean, t: TranslationKeys): string => {
+const getPhaseLabel = (
+  phase: WorkoutPhase,
+  isPaused: boolean,
+  t: TranslationKeys,
+): string => {
   if (isPaused) return t.phasePaused;
   switch (phase) {
     case "work":
@@ -248,7 +249,12 @@ export default function TabTwoScreen() {
           </ThemedText>
 
           {workoutState.isWorking && (
-            <ThemedText style={[styles.timerText, { fontSize: timerFontSize, lineHeight: timerFontSize * 1.2 }]}>
+            <ThemedText
+              style={[
+                styles.timerText,
+                { fontSize: timerFontSize, lineHeight: timerFontSize * 1.2 },
+              ]}
+            >
               {formatTime(workoutState.phaseTimeRemaining)}
             </ThemedText>
           )}
