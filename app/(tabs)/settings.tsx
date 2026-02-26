@@ -1,16 +1,16 @@
-import { Card } from '@/components/Card';
-import { PickerModal } from '@/components/modalSpeker';
-import { SettingRow } from '@/components/SettingRow';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Colors } from '@/constants/theme';
-import { LANGUAGES, useSettings } from '@/context/SettingsContext';
-import { useTheme } from '@/context/ThemeContext';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { useTranslation } from '@/hooks/use-translation';
-import Slider from '@react-native-community/slider';
-import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Switch, TouchableOpacity } from 'react-native';
+import { Card } from "@/components/Card";
+import { PickerModal } from "@/components/modalSpeker";
+import { SettingRow } from "@/components/SettingRow";
+import { ThemedText } from "@/components/themed-text";
+import { ThemedView } from "@/components/themed-view";
+import { Colors } from "@/constants/theme";
+import { LANGUAGES, useSettings } from "@/context/SettingsContext";
+import { useTheme } from "@/context/ThemeContext";
+import { useColorScheme } from "@/hooks/use-color-scheme";
+import { useTranslation } from "@/hooks/use-translation";
+import Slider from "@react-native-community/slider";
+import React, { useState } from "react";
+import { ScrollView, StyleSheet, Switch, TouchableOpacity } from "react-native";
 
 export default function TabTwoScreen() {
   //Importo hooks del context
@@ -22,20 +22,19 @@ export default function TabTwoScreen() {
     voice,
     setVoice,
     voiceActive,
-    setVoiceActive
+    setVoiceActive,
   } = useSettings();
-
 
   // Tema
   const { isDarkMode, setThemeMode } = useTheme();
   const colorScheme = useColorScheme();
-  const themeColors = Colors[colorScheme ?? 'light'];
+  const themeColors = Colors[colorScheme ?? "light"];
   const t = useTranslation();
 
   const [languagePickerVisible, setLanguagePickerVisible] = useState(false);
   const [speakerPickerVisible, setSpeakerPickerVisible] = useState(false);
 
-  //Sono come le variabili di stato di un compinente Angualr  
+  //Sono come le variabili di stato di un compinente Angualr
   return (
     <ThemedView style={styles.container}>
       <ScrollView>
@@ -44,8 +43,10 @@ export default function TabTwoScreen() {
           <Card title={t.appearance}>
             <SettingRow label={t.darkMode}>
               <Switch
-                trackColor={{ false: '#767577', true: themeColors.primary }}
-                onValueChange={(value) => setThemeMode(value ? 'dark' : 'light')}
+                trackColor={{ false: "#767577", true: themeColors.primary }}
+                onValueChange={(value) =>
+                  setThemeMode(value ? "dark" : "light")
+                }
                 value={isDarkMode}
               />
             </SettingRow>
@@ -55,7 +56,7 @@ export default function TabTwoScreen() {
           <Card title={t.sounds}>
             <SettingRow label={t.voiceEnabled}>
               <Switch
-                trackColor={{ false: '#767577', true: themeColors.primary }}
+                trackColor={{ false: "#767577", true: themeColors.primary }}
                 value={voiceActive}
                 onValueChange={setVoiceActive}
               />
@@ -66,8 +67,14 @@ export default function TabTwoScreen() {
                 <SettingRow label={t.language}>
                   <TouchableOpacity
                     onPress={() => setLanguagePickerVisible(true)}
-                    style={[styles.pickerButton, { borderColor: themeColors.border, borderWidth: 1 }]}>
-                    <ThemedText style={styles.pickerButtonText}>{language}</ThemedText>
+                    style={[
+                      styles.pickerButton,
+                      { borderColor: themeColors.border, borderWidth: 1 },
+                    ]}
+                  >
+                    <ThemedText style={styles.pickerButtonText}>
+                      {language}
+                    </ThemedText>
                   </TouchableOpacity>
                   <PickerModal
                     visible={languagePickerVisible}
@@ -78,22 +85,22 @@ export default function TabTwoScreen() {
                     title={t.selectLanguage}
                   />
                 </SettingRow>
-                <SettingRow label={t.volume} slider={true}>
-                  <ThemedView lightColor="transparent" darkColor="transparent">
-                    <Slider
-                      style={{ marginTop: 20 }}
-                      minimumValue={0}
-                      maximumValue={1}
-                      minimumTrackTintColor={themeColors.primary}
-                      thumbTintColor={themeColors.primary}
-                      value={volume}
-                      onValueChange={setVolume}
-                      step={0.01}
-                    />
-                  </ThemedView>
-                </SettingRow>
               </>
             )}
+            <SettingRow label={t.volume} slider={true}>
+              <ThemedView lightColor="transparent" darkColor="transparent">
+                <Slider
+                  style={{ marginTop: 20 }}
+                  minimumValue={0}
+                  maximumValue={1}
+                  minimumTrackTintColor={themeColors.primary}
+                  thumbTintColor={themeColors.primary}
+                  value={volume}
+                  onValueChange={setVolume}
+                  step={0.01}
+                />
+              </ThemedView>
+            </SettingRow>
           </Card>
           <ThemedText>{t.version}</ThemedText>
         </ThemedView>
@@ -110,7 +117,7 @@ const styles = StyleSheet.create({
   },
   header: {
     fontSize: 32,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 24,
   },
   section: {
@@ -120,13 +127,13 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 12,
   },
   settingItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingVertical: 12,
   },
   settingText: {
@@ -140,7 +147,6 @@ const styles = StyleSheet.create({
   },
   pickerButtonText: {
     fontSize: 16,
-    textAlign: 'center',
-
-  }
+    textAlign: "center",
+  },
 });

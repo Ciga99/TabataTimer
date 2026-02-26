@@ -4,6 +4,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { usePresets } from '@/context/PresetsContext';
+import { useSettings } from '@/context/SettingsContext';
 import { useTraining } from '@/context/TrainingContext';
 import { useTranslation } from '@/hooks/use-translation';
 import { Preset, Training } from '@/types/Training';
@@ -15,6 +16,7 @@ import { Swipeable } from 'react-native-gesture-handler';
 export default function PresetsScreen() {
   const { presets, addPreset, updatePreset, deletePreset, getPresetById, isLoaded } = usePresets();
   const { setTraining } = useTraining();
+  const { setVoice, setVoiceActive } = useSettings();
   const t = useTranslation();
 
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -59,6 +61,8 @@ export default function PresetsScreen() {
   const handleSelectPreset = (preset: Preset) => {
     const training = presetToTraining(preset);
     setTraining(training);
+    setVoice(preset.voice);
+    setVoiceActive(preset.isVoiceEnabled);
     router.navigate('/tabata');
   };
 

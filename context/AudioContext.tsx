@@ -78,9 +78,7 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     // Aggiorna il ref per il prossimo render
     prevStateRef.current = curr;
 
-    if (!isVoiceEnabled()) return;
-
-    // --- COUNTDOWN: 3 secondi rimanenti ---
+    // --- COUNTDOWN: 3 secondi rimanenti --- (sempre, anche con voce disabilitata)
     if (
       curr.isWorking &&
       !curr.isPaused &&
@@ -90,6 +88,8 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       playSound(COUNTDOWN_SOUND);
       return; // Non sovrapporre countdown e transizione
     }
+
+    if (!isVoiceEnabled()) return;
 
     // --- TRANSIZIONE DI FASE ---
     if (prev.phase !== curr.phase && curr.isWorking) {
