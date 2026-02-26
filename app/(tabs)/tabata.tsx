@@ -5,6 +5,7 @@ import { ThemedView } from "@/components/themed-view";
 import { Colors } from "@/constants/theme";
 import { TranslationKeys } from "@/constants/translations";
 import { useAudio } from "@/context/AudioContext";
+import { useSettings } from "@/context/SettingsContext";
 import { useTraining } from "@/context/TrainingContext";
 import { useWorkout, WorkoutPhase } from "@/context/WorkoutContext";
 import { useColorScheme } from "@/hooks/use-color-scheme";
@@ -66,6 +67,7 @@ export default function TabTwoScreen() {
   const [orientation, setOrientation] =
     useState<ScreenOrientation.Orientation | null>(null);
   const { training, setTraining } = useTraining();
+  const { voiceActive, setVoiceActive } = useSettings();
   const { workoutState, startWorkout, pauseWorkout, resumeWorkout } =
     useWorkout();
   const { playUserAction } = useAudio();
@@ -86,6 +88,7 @@ export default function TabTwoScreen() {
 
   const handleSaveTraining = (updatedTraining: Training) => {
     setTraining(updatedTraining);
+    setVoiceActive(updatedTraining.isVoiceEnabled);
     closeModal();
   };
 
@@ -366,7 +369,7 @@ export default function TabTwoScreen() {
         visible={isModalVisible}
         onClose={closeModal}
         onSave={handleSaveTraining}
-        training={training}
+        training={{ ...training, isVoiceEnabled: voiceActive }}
         title={t.editTraining}
         showTitleandDescription={false}
       />
