@@ -1,32 +1,42 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
-export type Languages = 'ITA' | 'ENG';
-export type Speakers = 'Donna' | 'Uomo' | 'Random';
+export type Languages = "ITA" | "ENG";
+export type Speakers = "Donna" | "Uomo" | "Random";
 
-export const LANGUAGES: Languages[] = ['ITA', 'ENG'];
-export const SPEAKERS: Speakers[] = ['Donna', 'Uomo', 'Random'];
+export const LANGUAGES: Languages[] = ["ITA", "ENG"];
+export const SPEAKERS: Speakers[] = ["Donna", "Uomo", "Random"];
 
 // 1. Definisci il tipo
 type SettingsContextType = {
-    volume: number;
-    setVolume: (volume : number) => void;
-    language: Languages;
-    setLanguage: (language : Languages) => void;
-    voice: Speakers;
-    setVoice: (voice : Speakers) => void;
-    voiceActive: boolean;
-    setVoiceActive: (voiceActive : boolean) => void;
-}
+  volume: number;
+  setVolume: (volume: number) => void;
+  language: Languages;
+  setLanguage: (language: Languages) => void;
+  voice: Speakers;
+  setVoice: (voice: Speakers) => void;
+  voiceActive: boolean;
+  setVoiceActive: (voiceActive: boolean) => void;
+};
 
 // 2. Crea il Context molto simile al servizio in angular  Cosa fa: Crea il "contenitore" vuoto che conterrà i dati.  per ora undefined
-const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
+const SettingsContext = createContext<SettingsContextType | undefined>(
+  undefined,
+);
 
 // 3. Provider
-export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const SettingsProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [volume, setVolume] = useState(0.5);
-  const [language, setLanguage] = useState<Languages>('ITA');
-  const [voice, setVoice] = useState<Speakers>('Donna');
+  const [language, setLanguage] = useState<Languages>("ITA");
+  const [voice, setVoice] = useState<Speakers>("Donna");
   const [voiceActive, setVoiceActive] = useState(true);
 
   // Carica le impostazioni salvate all'avvio Caricamento iniziale (useEffect)
@@ -34,7 +44,7 @@ export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }
     loadSettings();
   }, []);
 
-  // Salva automaticamente quando i valori cambiano 
+  // Salva automaticamente quando i valori cambiano
   useEffect(() => {
     saveSettings();
   }, [volume, language, voice, voiceActive]);
@@ -42,40 +52,41 @@ export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }
   // Funzione per caricare le impostazioni
   const loadSettings = async () => {
     try {
-      const savedVolume = await AsyncStorage.getItem('volume');
-      const savedLanguage = await AsyncStorage.getItem('language');
-      const savedVoice = await AsyncStorage.getItem('voice');
-      const savedVoiceActive = await AsyncStorage.getItem('voiceActive');
+      const savedVolume = await AsyncStorage.getItem("volume");
+      const savedLanguage = await AsyncStorage.getItem("language");
+      const savedVoice = await AsyncStorage.getItem("voice");
+      const savedVoiceActive = await AsyncStorage.getItem("voiceActive");
 
       if (savedVolume !== null) setVolume(parseFloat(savedVolume));
       if (savedLanguage !== null) setLanguage(savedLanguage as Languages);
       if (savedVoice !== null) {
         // Migrazione: vecchi nomi speaker -> nuovi
-        if (savedVoice === 'Alice' || savedVoice === 'Eva') setVoice('Donna');
-        else if (savedVoice === 'Bob' || savedVoice === 'Negro') setVoice('Uomo');
-        else setVoice(savedVoice as Speakers);
+        if (savedVoice === "Random") setVoice("Random");
+        else if (savedVoice === "Uomo") setVoice("Uomo");
+        else setVoice("Donna"); // "Donna" e qualsiasi vecchio nome -> Donna
       }
-      if (savedVoiceActive !== null) setVoiceActive(savedVoiceActive === 'true');
+      if (savedVoiceActive !== null)
+        setVoiceActive(savedVoiceActive === "true");
     } catch (error) {
-      console.error('Errore nel caricamento delle impostazioni:', error);
+      console.error("Errore nel caricamento delle impostazioni:", error);
     }
   };
 
   // Funzione per salvare le impostazioni
   const saveSettings = async () => {
     try {
-      await AsyncStorage.setItem('volume', volume.toString());
-      await AsyncStorage.setItem('language', language);
-      await AsyncStorage.setItem('voice', voice);
-      await AsyncStorage.setItem('voiceActive', voiceActive.toString());
+      await AsyncStorage.setItem("volume", volume.toString());
+      await AsyncStorage.setItem("language", language);
+      await AsyncStorage.setItem("voice", voice);
+      await AsyncStorage.setItem("voiceActive", voiceActive.toString());
     } catch (error) {
-      console.error('Errore nel salvataggio delle impostazioni:', error);
+      console.error("Errore nel salvataggio delle impostazioni:", error);
     }
   };
 
   return (
     // componente che "fornisce" i dati
-    <SettingsContext.Provider  
+    <SettingsContext.Provider
       value={{
         volume,
         setVolume,
@@ -85,17 +96,18 @@ export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }
         setVoice,
         voiceActive,
         setVoiceActive,
-      }}>
+      }}
+    >
       {children}
     </SettingsContext.Provider>
   );
 };
 
-// 4. Hook personalizzato per usare il Context facilita l'accesso ai dati del contesto quando lo chiamo non devo controllare se esiste 
+// 4. Hook personalizzato per usare il Context facilita l'accesso ai dati del contesto quando lo chiamo non devo controllare se esiste
 export const useSettings = () => {
   const context = useContext(SettingsContext);
   if (!context) {
-    throw new Error('useSettings deve essere usato dentro SettingsProvider');
+    throw new Error("useSettings deve essere usato dentro SettingsProvider");
   }
   return context;
 };
