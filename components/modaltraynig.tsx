@@ -128,7 +128,7 @@ export function TrainingModal({
         />
 
         {/* behavior="padding" sposta il modal in su senza restringerlo */}
-        <KeyboardAvoidingView behavior="padding" style={{ width: width * 0.9 }}>
+        <KeyboardAvoidingView behavior="padding" style={{ width: Math.min(width * 0.9, 560) }}>
           <ThemedView
             style={[styles.modalContent, { height: modalHeight }]}
             lightColor={Colors.light.modalBackground}

@@ -6,6 +6,7 @@ import { IconSymbol } from '@/components/ui/icon-symbol';
 import { usePresets } from '@/context/PresetsContext';
 import { useSettings } from '@/context/SettingsContext';
 import { useTraining } from '@/context/TrainingContext';
+import { useResponsive } from '@/hooks/use-responsive';
 import { useTranslation } from '@/hooks/use-translation';
 import { Preset, Training } from '@/types/Training';
 import { router } from 'expo-router';
@@ -18,6 +19,7 @@ export default function PresetsScreen() {
   const { setTraining } = useTraining();
   const { setVoice, setVoiceActive } = useSettings();
   const t = useTranslation();
+  const { numColumns, isLargeScreen, contentMaxWidth } = useResponsive();
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [presetToEdit, setPresetToEdit] = useState<string | null>(null);
@@ -129,7 +131,11 @@ export default function PresetsScreen() {
       <FlatList
         data={presets}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.listContent}
+        contentContainerStyle={[
+          styles.listContent,
+          isLargeScreen && { maxWidth: contentMaxWidth ?? 700, alignSelf: 'center', width: '100%' },
+        ]}
+        style={isLargeScreen ? styles.listCentered : undefined}
         renderItem={({ item }) => {
           let swipeableRef: Swipeable | null = null;// Creo un riferimento per poter chiudere lo swipe programmaticamente
           return (
@@ -193,6 +199,9 @@ const styles = StyleSheet.create({
     width: 80,
     marginVertical: 5,
     borderRadius: 20,
+  },
+  listCentered: {
+    width: '100%',
   },
   loadingText: {
     textAlign: 'center',

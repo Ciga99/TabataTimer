@@ -9,6 +9,7 @@ import { useSettings } from "@/context/SettingsContext";
 import { useTraining } from "@/context/TrainingContext";
 import { useWorkout, WorkoutPhase } from "@/context/WorkoutContext";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import { useResponsive } from "@/hooks/use-responsive";
 import { useTranslation } from "@/hooks/use-translation";
 import { Training } from "@/types/Training";
 import * as ScreenOrientation from "expo-screen-orientation";
@@ -16,7 +17,6 @@ import { useEffect, useState } from "react";
 import {
   StyleSheet,
   TouchableOpacity,
-  useWindowDimensions,
   View,
 } from "react-native";
 import { formatTime } from "../helper";
@@ -74,7 +74,7 @@ export default function TabTwoScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? "light"];
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const { width, height } = useWindowDimensions();
+  const { width, height, isLargeScreen, contentMaxWidth, tabBarBottomPadding } = useResponsive();
   const t = useTranslation();
   const [timeRemaining, setTimeRemaining] = useState(0);
 
@@ -160,50 +160,34 @@ export default function TabTwoScreen() {
     return `${workoutState.currentCycle}/${training.cycles}`;
   };
 
-  // Calcolo di min(80, 8% della larghezza)
-  // const dynamicPadding = Math.min(10, width * 0.08);
-  const dynamicPadding = 90;
+  const dynamicPadding = tabBarBottomPadding;
 
   const getButtonSizeWidth = () => {
-    return Math.min(800, width * 0.9);
-    // // 1. TABLET (o Landscape molto largo)
-    // if (width >= 768) {
-    //   return width * 0.90; // Su tablet non vogliamo il bottone gigante, 30% altezza basta
-    // }
-    // // 2. MOBILE STANDARD (iPhone 13, 14, Galaxy S23 ecc.)
-    // if (width >= 700) {
-    //   return width * 0.45; // Dimensione generosa per schermi lunghi
-    // }
-    // // 3. MOBILE PICCOLO (iPhone SE, vecchi modelli)
-    // return width * 0.9;
+    // Limitato dalla larghezza contenuto (già cappata a 900/700) oppure 90% schermo
+    const maxW = contentMaxWidth ?? width;
+    return Math.min(800, maxW * 0.9);
   };
 
   const getButtonSizeHeight = () => {
-    // 1. TABLET (o Landscape molto largo)
-    if (height >= 768) {
-      return height * 0.3; // Su tablet non vogliamo il bottone gigante, 30% altezza basta
+    // Su schermi grandi (tablet/desktop) il bottone non deve dominare lo schermo
+    if (isLargeScreen) {
+      return Math.min(350, height * 0.28);
     }
-    // 2. MOBILE STANDARD (iPhone 13, 14, Galaxy S23 ecc.)
-    if (height >= 700) {
-      return height * 0.4; // Dimensione generosa per schermi lunghi
+    // Mobile piccolo (iPhone SE, h < 700)
+    if (height < 700) {
+      return height * 0.35;
     }
-    // 3. MOBILE PICCOLO (iPhone SE, vecchi modelli)
-    return height * 0.35;
+    // Mobile standard
+    return Math.min(320, height * 0.38);
   };
 
   const getSmallButtonSize = () => {
-    // 1. TABLET (o Landscape molto largo)
-    // Generalmente width > 600 indica un tablet in portrait o uno smartphone in landscape
-    if (width >= 768) {
-      return height * 0.2; // Su tablet non vogliamo il bottone gigante, 30% altezza basta
+    if (isLargeScreen) {
+      return Math.min(110, height * 0.12);
     }
-    // 2. MOBILE STANDARD (iPhone 13, 14, Galaxy S23 ecc.)
-    // Altezza tipica sopra i 700dp
     if (height >= 700) {
-      return height * 0.09; // Dimensione generosa per schermi lunghi
+      return height * 0.09;
     }
-    // 3. MOBILE PICCOLO (iPhone SE, vecchi modelli)
-    // Altezza sotto i 700dp
     return height * 0.1;
   };
   // Stili dinamici per dimensioni reattive
@@ -236,7 +220,12 @@ export default function TabTwoScreen() {
   const timerFontSize = Math.min(56, getButtonSizeHeight() * 0.5);
 
   return (
-    <ThemedView style={[styles.container, { paddingBottom: dynamicPadding }]}>
+    <ThemedView style={styles.outerContainer}>
+      <ThemedView style={[
+        styles.container,
+        { paddingBottom: dynamicPadding },
+        isLargeScreen && { maxWidth: contentMaxWidth ?? 900, alignSelf: 'center', width: '100%' },
+      ]}>
       <ThemedText style={styles.totalTimeText}>
         {t.totalTime}: {formatTime(displayedTime)}
       </ThemedText>
@@ -373,13 +362,15 @@ export default function TabTwoScreen() {
         title={t.editTraining}
         showTitleandDescription={false}
       />
-      {/* </>  */}
-      {/* )} */}
+      </ThemedView>
     </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
+  outerContainer: {
+    flex: 1,
+  },
   container: {
     flexDirection: "column",
     alignItems: "center",

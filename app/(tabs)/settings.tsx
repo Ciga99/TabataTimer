@@ -7,6 +7,7 @@ import { Colors } from "@/constants/theme";
 import { LANGUAGES, useSettings } from "@/context/SettingsContext";
 import { useTheme } from "@/context/ThemeContext";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import { useResponsive } from "@/hooks/use-responsive";
 import { useTranslation } from "@/hooks/use-translation";
 import Slider from "@react-native-community/slider";
 import React, { useState } from "react";
@@ -30,6 +31,7 @@ export default function TabTwoScreen() {
   const colorScheme = useColorScheme();
   const themeColors = Colors[colorScheme ?? "light"];
   const t = useTranslation();
+  const { isLargeScreen, contentMaxWidth } = useResponsive();
 
   const [languagePickerVisible, setLanguagePickerVisible] = useState(false);
   const [speakerPickerVisible, setSpeakerPickerVisible] = useState(false);
@@ -37,7 +39,10 @@ export default function TabTwoScreen() {
   //Sono come le variabili di stato di un compinente Angualr
   return (
     <ThemedView style={styles.container}>
-      <ScrollView>
+      <ScrollView contentContainerStyle={[
+        styles.scrollContent,
+        isLargeScreen && { maxWidth: contentMaxWidth ?? 700, alignSelf: 'center', width: '100%' },
+      ]}>
         <ThemedView>
           {/* Sezione Aspetto */}
           <Card title={t.appearance}>
@@ -112,8 +117,10 @@ export default function TabTwoScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  scrollContent: {
     padding: 16,
-    paddingBottom: 120, // Spazio per tab bar (70px) + margine (30px) + extra (20px)
+    paddingBottom: 120,
   },
   header: {
     fontSize: 32,

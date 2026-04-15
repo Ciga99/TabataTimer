@@ -4,10 +4,11 @@ import { Colors } from '@/constants/theme';
 import { useAudio } from '@/context/AudioContext';
 import { useWorkout } from '@/context/WorkoutContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useResponsive } from '@/hooks/use-responsive';
 import { useTranslation } from '@/hooks/use-translation';
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 
 function WorkingTabBar() {
   const { stopWorkout } = useWorkout();
@@ -34,6 +35,9 @@ export default function TabLayout() {
   const { workoutState } = useWorkout();
   const isWorking = workoutState.isWorking;
   const t = useTranslation();
+  const { width, isLargeScreen } = useResponsive();
+  // Su schermi grandi la tab bar si allarga proporzionalmente (max 600px centrata)
+  const tabBarHorizontalMargin = isLargeScreen ? Math.max(50, (width - 600) / 2) : 50;
 
   return (
     <Tabs
@@ -52,7 +56,7 @@ export default function TabLayout() {
         headerTintColor: Colors[colorScheme ?? 'light'].text,
         headerShadowVisible: false,
         tabBarShowLabel: false,
-        tabBarStyle: isWorking ? { display: 'none' } : [styles.tabBarStyle, { backgroundColor: Colors[colorScheme ?? 'light'].card }],
+        tabBarStyle: isWorking ? { display: 'none' } : [styles.tabBarStyle, { backgroundColor: Colors[colorScheme ?? 'light'].card, marginHorizontal: tabBarHorizontalMargin }],
       }}
       tabBar={isWorking ? () => <WorkingTabBar /> : undefined}
     >
@@ -82,7 +86,6 @@ const styles = StyleSheet.create({
   tabBarStyle: {
     position: 'absolute',
     bottom: 10,
-    marginHorizontal: 50,
     borderRadius: 50,
     height: 50,
     justifyContent: 'center',
