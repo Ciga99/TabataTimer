@@ -1,4 +1,6 @@
+import { dismissWorkoutNotification, showWorkoutNotification } from '@/services/NotificationService';
 import { Training } from '@/types/Training';
+import { BackgroundTimer } from 'react-native-nitro-bg-timer';
 import React, { createContext, ReactNode, useCallback, useContext, useEffect, useRef, useState } from 'react';
 
 // Tipi per le fasi del workout
@@ -46,81 +48,57 @@ const calculateTotalTime = (training: Training): number => {
 
 export const WorkoutProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [workoutState, setWorkoutState] = useState<WorkoutState>(initialState);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);//componente si ri-renderizza a differenza di useState che lo fa in base a certi valori che cambiano valore
+  const intervalRef = useRef<number | null>(null);
   const trainingRef = useRef<Training | null>(null);
 
+  // Refs per il timer basato su timestamp (preciso anche in background)
+  const phaseEndTimeRef = useRef<number>(0);
+  const workoutStartTimeRef = useRef<number>(0);
+  const totalTimeAtStartRef = useRef<number>(0);
+  const pausedAtRef = useRef<number>(0);
+
   // Helper: Determina la prossima fase
-  // Senza useCallback, ogni volta che il componente si ri-renderizza, JavaScript crea una NUOVA funzione tick. Con useCallback, React riutilizza la stessa funzione (a meno che le dipendenze non cambino).
   const getNextPhase = useCallback((
     currentPhase: WorkoutPhase,
     currentSerial: number,
     currentCycle: number,
     training: Training
   ): { phase: WorkoutPhase; serial: number; cycle: number; duration: number } => {
-    //  (( Valori di input  ))
-    //  { ... valorei di ritorno ... }
-      if (currentPhase=== 'work') {
-      // Dopo LAVORO: controlla se ci sono altre serie
+    if (currentPhase === 'work') {
       if (currentSerial < training.serial) {
-        // Vai a RIPOSO tra serie
-        return {
-          phase: 'rest',
-          serial: currentSerial,
-          cycle: currentCycle,
-          duration: training.timePause
-        };
+        return { phase: 'rest', serial: currentSerial, cycle: currentCycle, duration: training.timePause };
       } else if (currentCycle < training.cycles) {
-        // Fine ciclo, vai a PAUSA CICLO
-        return {
-          phase: 'cycle_rest',
-          serial: currentSerial,
-          cycle: currentCycle,
-          duration: training.timePauseCycle
-        };
+        return { phase: 'cycle_rest', serial: currentSerial, cycle: currentCycle, duration: training.timePauseCycle };
       } else {
-        // Fine allenamento
         return { phase: 'finished', serial: currentSerial, cycle: currentCycle, duration: 0 };
       }
     }
 
     if (currentPhase === 'rest') {
-      // Dopo RIPOSO: vai alla prossima serie di LAVORO
-      return {
-        phase: 'work',
-        serial: currentSerial + 1,
-        cycle: currentCycle,
-        duration: training.timeWork
-      };
+      return { phase: 'work', serial: currentSerial + 1, cycle: currentCycle, duration: training.timeWork };
     }
 
     if (currentPhase === 'cycle_rest') {
-      // Dopo PAUSA CICLO: inizia nuovo ciclo
-      return {
-        phase: 'work',
-        serial: 1,
-        cycle: currentCycle + 1,
-        duration: training.timeWork
-      };
+      return { phase: 'work', serial: 1, cycle: currentCycle + 1, duration: training.timeWork };
     }
-    // Default (non dovrebbe mai arrivare qui)
+
     return { phase: 'finished', serial: currentSerial, cycle: currentCycle, duration: 0 };
   }, []);
 
-  // FUNZIONE PRINCIPALE: Tick del timer (chiamata ogni secondo)
+  // FUNZIONE PRINCIPALE: Tick del timer — usa Date.now() per precisione in background
   const tick = useCallback(() => {
-    setWorkoutState(prev => { //"prev" = stato PRECEDENTE
-      if (prev.isPaused || !prev.isWorking) return prev;//Se non fai nulla, ritorna lo stato invariato
+    setWorkoutState(prev => {
+      if (prev.isPaused || !prev.isWorking) return prev;
 
-      const newPhaseTime = prev.phaseTimeRemaining - 1;
-      const newTotalTime = prev.totalTimeRemaining - 1;
+      const now = Date.now();
+      const newPhaseTime = Math.max(0, Math.round((phaseEndTimeRef.current - now) / 1000));
+      const newTotalTime = Math.max(0, Math.round(
+        (workoutStartTimeRef.current + totalTimeAtStartRef.current * 1000 - now) / 1000
+      ));
 
       // Fase corrente non terminata
       if (newPhaseTime > 0) {
-        return {
-          ...prev,
-          phaseTimeRemaining: newPhaseTime,
-          totalTimeRemaining: newTotalTime,
-        };
+        return { ...prev, phaseTimeRemaining: newPhaseTime, totalTimeRemaining: newTotalTime };
       }
 
       // Fase terminata: calcola prossima fase
@@ -130,8 +108,11 @@ export const WorkoutProvider: React.FC<{ children: ReactNode }> = ({ children })
       const next = getNextPhase(prev.phase, prev.currentSerial, prev.currentCycle, training);
 
       if (next.phase === 'finished') {
-        // Allenamento completato
-        if (intervalRef.current) clearInterval(intervalRef.current);
+        if (intervalRef.current !== null) {
+          BackgroundTimer.clearInterval(intervalRef.current);
+          intervalRef.current = null;
+        }
+        dismissWorkoutNotification();
         return {
           ...initialState,
           phase: 'finished',
@@ -139,6 +120,10 @@ export const WorkoutProvider: React.FC<{ children: ReactNode }> = ({ children })
           currentSerial: prev.currentSerial,
         };
       }
+
+      // Aggiorna il timestamp di fine fase (corregge l'overshoot)
+      const overshoot = Math.max(0, now - phaseEndTimeRef.current);
+      phaseEndTimeRef.current = now + next.duration * 1000 - overshoot;
 
       return {
         ...prev,
@@ -155,6 +140,12 @@ export const WorkoutProvider: React.FC<{ children: ReactNode }> = ({ children })
   const startWorkout = useCallback((training: Training) => {
     trainingRef.current = training;
     const totalTime = calculateTotalTime(training);
+
+    const now = Date.now();
+    phaseEndTimeRef.current = now + training.timeWork * 1000;
+    workoutStartTimeRef.current = now;
+    totalTimeAtStartRef.current = totalTime;
+
     setWorkoutState({
       isWorking: true,
       isPaused: false,
@@ -165,35 +156,54 @@ export const WorkoutProvider: React.FC<{ children: ReactNode }> = ({ children })
       totalTimeRemaining: totalTime,
     });
 
-    // Avvia interval
-    if (intervalRef.current) clearInterval(intervalRef.current);
-    intervalRef.current = setInterval(tick, 1000);
+    if (intervalRef.current !== null) {
+      BackgroundTimer.clearInterval(intervalRef.current);
+    }
+    intervalRef.current = BackgroundTimer.setInterval(tick, 1000);
   }, [tick]);
 
   // PAUSE
   const pauseWorkout = useCallback(() => {
+    pausedAtRef.current = Date.now();
     setWorkoutState(prev => ({ ...prev, isPaused: true }));
   }, []);
 
   // RESUME
   const resumeWorkout = useCallback(() => {
+    const pausedDuration = Date.now() - pausedAtRef.current;
+    // Sposta i timestamp in avanti della durata della pausa
+    phaseEndTimeRef.current += pausedDuration;
+    workoutStartTimeRef.current += pausedDuration;
     setWorkoutState(prev => ({ ...prev, isPaused: false }));
   }, []);
 
   // STOP
   const stopWorkout = useCallback(() => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
+    if (intervalRef.current !== null) {
+      BackgroundTimer.clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
     trainingRef.current = null;
+    dismissWorkoutNotification();
     setWorkoutState(initialState);
   }, []);
+
+  // Aggiorna la notifica Android ad ogni tick (foreground service)
+  useEffect(() => {
+    if (!workoutState.isWorking || workoutState.isPaused) return;
+    if (workoutState.phase === 'finished') {
+      dismissWorkoutNotification();
+      return;
+    }
+    showWorkoutNotification(workoutState.phase, workoutState.phaseTimeRemaining);
+  }, [workoutState]);
 
   // Cleanup quando componente smonta
   useEffect(() => {
     return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (intervalRef.current !== null) {
+        BackgroundTimer.clearInterval(intervalRef.current);
+      }
     };
   }, []);
 

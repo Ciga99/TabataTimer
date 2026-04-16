@@ -4,10 +4,13 @@ import { SettingsProvider } from '@/context/SettingsContext';
 import { ThemeProvider, useTheme } from '@/context/ThemeContext';
 import { TrainingProvider } from '@/context/TrainingContext';
 import { WorkoutProvider } from '@/context/WorkoutContext';
+import { requestNotificationPermissions } from '@/services/NotificationService';
 import { Inter_400Regular, Inter_700Bold, useFonts } from '@expo-google-fonts/inter';
 import { DarkTheme, DefaultTheme, ThemeProvider as NavigationThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
+import { Platform } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-reanimated';
 
@@ -32,6 +35,13 @@ function AppContent() {
 // Root Layout - ThemeProvider deve essere il primo!
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({ Inter_400Regular, Inter_700Bold });
+
+  useEffect(() => {
+    if (Platform.OS === 'android') {
+      requestNotificationPermissions();
+    }
+  }, []);
+
   if (!fontsLoaded) return null;
   
 

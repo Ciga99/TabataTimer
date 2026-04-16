@@ -18,12 +18,14 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
   const prevStateRef = useRef<WorkoutState>(workoutState);
   const soundRef = useRef<Audio.Sound | null>(null);
+  // Audio silenzioso in loop: mantiene la sessione audio iOS attiva in background
+  const keepaliveRef = useRef<Audio.Sound | null>(null);
 
-  // Configura audio mode all'avvio
+  // Configura audio mode all'avvio — staysActiveInBackground: true per iOS background
   useEffect(() => {
     Audio.setAudioModeAsync({
       playsInSilentModeIOS: true,
-      staysActiveInBackground: false,
+      staysActiveInBackground: true,
       shouldDuckAndroid: true,
     });
   }, []);
@@ -70,13 +72,48 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     }
   }, [volume]);
 
-  // Effect unico: osserva workoutState per countdown e transizioni di fase
+  // Avvia audio silenzioso in loop per mantenere la sessione audio iOS attiva
+  const startKeepalive = useCallback(async () => {
+    if (keepaliveRef.current) return;
+    try {
+      const { sound } = await Audio.Sound.createAsync(
+        require('@/assets/sounds/silence.wav'),
+        { isLooping: true, volume: 0, isMuted: true }
+      );
+      keepaliveRef.current = sound;
+      await sound.playAsync();
+    } catch (e) {
+      console.warn('Keepalive audio non avviato:', e);
+    }
+  }, []);
+
+  // Ferma audio silenzioso
+  const stopKeepalive = useCallback(async () => {
+    if (!keepaliveRef.current) return;
+    try {
+      await keepaliveRef.current.stopAsync();
+      await keepaliveRef.current.unloadAsync();
+      keepaliveRef.current = null;
+    } catch (e) {
+      console.warn('Keepalive audio non fermato:', e);
+    }
+  }, []);
+
+  // Effect unico: osserva workoutState per countdown, transizioni di fase e keepalive
   useEffect(() => {
     const prev = prevStateRef.current;
     const curr = workoutState;
 
     // Aggiorna il ref per il prossimo render
     prevStateRef.current = curr;
+
+    // --- KEEPALIVE: avvia/ferma audio silenzioso ---
+    if (curr.isWorking && !prev.isWorking) {
+      startKeepalive();
+    }
+    if (!curr.isWorking && prev.isWorking) {
+      stopKeepalive();
+    }
 
     // --- COUNTDOWN: 3 secondi rimanenti --- (sempre, anche con voce disabilitata)
     if (
@@ -104,7 +141,7 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         playSound(AUDIO_MAP[language][curr.phase as AudioEvent][speaker]);
       }
     }
-  }, [workoutState, isVoiceEnabled, playSound, getEffectiveSpeaker, language]);
+  }, [workoutState, isVoiceEnabled, playSound, getEffectiveSpeaker, language, startKeepalive, stopKeepalive]);
 
   // Metodo per azioni utente (start, pause, resume, reset)
   const playUserAction = useCallback((action: 'start' | 'pause' | 'resume' | 'reset') => {
@@ -116,9 +153,8 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      if (soundRef.current) {
-        soundRef.current.unloadAsync();
-      }
+      soundRef.current?.unloadAsync();
+      keepaliveRef.current?.unloadAsync();
     };
   }, []);
 
