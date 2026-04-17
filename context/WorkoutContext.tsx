@@ -1,6 +1,5 @@
 import { dismissWorkoutNotification, showWorkoutNotification } from '@/services/NotificationService';
 import { Training } from '@/types/Training';
-import { BackgroundTimer } from 'react-native-nitro-bg-timer';
 import React, { createContext, ReactNode, useCallback, useContext, useEffect, useRef, useState } from 'react';
 
 // Tipi per le fasi del workout
@@ -109,7 +108,7 @@ export const WorkoutProvider: React.FC<{ children: ReactNode }> = ({ children })
 
       if (next.phase === 'finished') {
         if (intervalRef.current !== null) {
-          BackgroundTimer.clearInterval(intervalRef.current);
+          clearInterval(intervalRef.current);
           intervalRef.current = null;
         }
         dismissWorkoutNotification();
@@ -157,9 +156,9 @@ export const WorkoutProvider: React.FC<{ children: ReactNode }> = ({ children })
     });
 
     if (intervalRef.current !== null) {
-      BackgroundTimer.clearInterval(intervalRef.current);
+      clearInterval(intervalRef.current);
     }
-    intervalRef.current = BackgroundTimer.setInterval(tick, 1000);
+    intervalRef.current = setInterval(tick, 1000);
   }, [tick]);
 
   // PAUSE
@@ -180,7 +179,7 @@ export const WorkoutProvider: React.FC<{ children: ReactNode }> = ({ children })
   // STOP
   const stopWorkout = useCallback(() => {
     if (intervalRef.current !== null) {
-      BackgroundTimer.clearInterval(intervalRef.current);
+      clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
     trainingRef.current = null;
@@ -202,7 +201,7 @@ export const WorkoutProvider: React.FC<{ children: ReactNode }> = ({ children })
   useEffect(() => {
     return () => {
       if (intervalRef.current !== null) {
-        BackgroundTimer.clearInterval(intervalRef.current);
+        clearInterval(intervalRef.current);
       }
     };
   }, []);
