@@ -1,14 +1,14 @@
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { TabIcon } from '@/components/ui/tabIcon';
-import { Colors } from '@/constants/theme';
-import { useAudio } from '@/context/AudioContext';
-import { useWorkout } from '@/context/WorkoutContext';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { useResponsive } from '@/hooks/use-responsive';
-import { useTranslation } from '@/hooks/use-translation';
-import { Tabs } from 'expo-router';
-import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
+import { IconSymbol } from "@/components/ui/icon-symbol";
+import { TabIcon } from "@/components/ui/tabIcon";
+import { Colors } from "@/constants/theme";
+import { useAudio } from "@/context/AudioContext";
+import { useWorkout } from "@/context/WorkoutContext";
+import { useColorScheme } from "@/hooks/use-color-scheme";
+import { useResponsive } from "@/hooks/use-responsive";
+import { useTranslation } from "@/hooks/use-translation";
+import { Tabs } from "expo-router";
+import React from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 function WorkingTabBar() {
   const { stopWorkout } = useWorkout();
@@ -16,13 +16,17 @@ function WorkingTabBar() {
   const t = useTranslation();
 
   const handleStop = () => {
-    playUserAction('reset');
+    playUserAction("reset");
     stopWorkout();
   };
 
   return (
     <View style={styles.workingTabBarContainer}>
-      <TouchableOpacity style={styles.workingButton} activeOpacity={0.8} onPress={handleStop}>
+      <TouchableOpacity
+        style={styles.workingButton}
+        activeOpacity={0.8}
+        onPress={handleStop}
+      >
         <IconSymbol name="stop" size={24} color="white" />
         <Text style={styles.workingButtonText}>{t.stop}</Text>
       </TouchableOpacity>
@@ -37,26 +41,36 @@ export default function TabLayout() {
   const t = useTranslation();
   const { width, isLargeScreen } = useResponsive();
   // Su schermi grandi la tab bar si allarga proporzionalmente (max 600px centrata)
-  const tabBarHorizontalMargin = isLargeScreen ? Math.max(50, (width - 600) / 2) : 50;
+  const tabBarHorizontalMargin = isLargeScreen
+    ? Math.max(50, (width - 600) / 2)
+    : 50;
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
         headerShown: true,
         headerTitle: t.headerTitle,
-        headerTitleAlign: 'center',
+        headerTitleAlign: "center",
         headerStyle: {
-          backgroundColor: Colors[colorScheme ?? 'light'].background,
+          backgroundColor: Colors[colorScheme ?? "light"].background,
         },
         headerTitleStyle: {
-          fontWeight: 'bold',
+          fontWeight: "bold",
           fontSize: 18,
         },
-        headerTintColor: Colors[colorScheme ?? 'light'].text,
+        headerTintColor: Colors[colorScheme ?? "light"].text,
         headerShadowVisible: false,
         tabBarShowLabel: false,
-        tabBarStyle: isWorking ? { display: 'none' } : [styles.tabBarStyle, { backgroundColor: Colors[colorScheme ?? 'light'].card, marginHorizontal: tabBarHorizontalMargin }],
+        tabBarStyle: isWorking
+          ? { display: "none" }
+          : [
+              styles.tabBarStyle,
+              {
+                backgroundColor: Colors[colorScheme ?? "light"].card,
+                marginHorizontal: tabBarHorizontalMargin,
+              },
+            ],
       }}
       tabBar={isWorking ? () => <WorkingTabBar /> : undefined}
     >
@@ -64,51 +78,60 @@ export default function TabLayout() {
         name="tabata"
         options={{
           title: t.tabTabata,
-          tabBarIcon: ({ color, focused }) => <TabIcon name="house.fill" color={color} focused={focused} />
-        }} />
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon name="house.fill" color={color} focused={focused} />
+          ),
+        }}
+      />
       <Tabs.Screen
         name="presets"
         options={{
           title: t.tabPresets,
-          tabBarIcon: ({ color, focused }) => <TabIcon name="paperplane.fill" color={color} focused={focused} />
-        }} />
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon name="paperplane.fill" color={color} focused={focused} />
+          ),
+        }}
+      />
       <Tabs.Screen
         name="settings"
         options={{
           title: t.tabSettings,
-          tabBarIcon: ({ color, focused }) => <TabIcon name="gearshape.fill" color={color} focused={focused} />
-        }} />
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon name="gearshape.fill" color={color} focused={focused} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }
 
 const styles = StyleSheet.create({
   tabBarStyle: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 10,
     borderRadius: 50,
     height: 50,
-    justifyContent: 'center',
-    alignContent: 'center',
+    justifyContent: "center",
+    alignContent: "center",
   },
   workingTabBarContainer: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 30,
     marginHorizontal: 50,
     left: 0,
     right: 0,
   },
   workingButton: {
-    backgroundColor: '#ff3b30',
+    backgroundColor: "#ff3b30",
     borderRadius: 50,
     height: 70,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
   },
   workingButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 });
